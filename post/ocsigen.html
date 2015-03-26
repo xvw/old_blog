@@ -1,0 +1,828 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Xavier Van de Woestyne</title>
+		<link href='https://fonts.googleapis.com/css?family=Playfair+Display:400,400italic,700' rel='stylesheet' type='text/css'>
+<link href='https://fonts.googleapis.com/css?family=Droid+Sans:400,700' rel='stylesheet' type='text/css'>
+<link href='../css/app.min.css' rel='stylesheet' type='text/css'>
+
+		<link rel="stylesheet" href="../css/default.css">
+    <meta charset="utf-8">
+    
+		<script src="../js/highlight.pack.js"></script>
+		<script>hljs.initHighlightingOnLoad();</script>
+  </head>
+  <body>
+		<div id="content">
+			<div id="header">
+				<h1>Ocsigen</h1>
+				<h2>Introduction naïve</h2>
+			</div>
+			<div class="center headmenu">
+        <a href="../list.html#Encore-une-lecture?" title="Bonne lecture?">Retour à la liste</a>
+				<a href="../index.html#Pourquoi-ne-pas-laisser-un-petit-commentaire?!" title="Il y a des commentaires en bas !!!">Retour à l'accueil</a>
+			</div>
+			<div id="article-content">
+				<blockquote>
+<p>Pendant très longtemps, j'ai été amené à concevoir des applications web. J'ai eu l'occasion d'expérimenter plusieurs technologies (PHP, Ruby on Rails, Django, Spring, ASP.NET et Yaws + Erlang). Je dois avouer n'avoir été que trop rarement satisfait par ces outils, principalement car depuis ma découverte des langages fonctionnels statiquement typés, j'ai réellement du mal à m'en passer. C'est pour cette raison qu'à l'annonce de Ocsigen, j'ai été véritablement emballé. Cependant, Ocsigen est, actuellement, pauvre en ressource et assez dépaysant (cette opinion n'est absolument pas à prendre comme un reproche mais plus comme une constatation et s'explique par l'innovation démontrée dans Ocsigen et sa jeunesse)), j'ai donc décidé de lui accorder un petit article proposant à sa fin, une implémentation pratique où chaque étape sera décrite !</p>
+</blockquote>
+<blockquote>
+<p><strong>Information sur cet article</strong><br />Cet article utilise une structure fortemment séquentielle. Il est évident qu'il ne présente pas une base de documentation rigoureuse mais est plus à prendre comme un apprentissage en tâtonnant. J'espère qu'il pourra tout de même apporter quelques informations pour les gens qui, comme moi, auraient fait face à des difficultés pour se lancer dans Ocsigen.</p>
+</blockquote>
+<blockquote>
+<p>Un des prérequis de ce cours est une connaissance du langage OCaml (version 4.02.x). Si vous utilisez OCaml 4.02.x, une installation manuelle de Macaque sera nécéssaire : <code>opam install Macaque</code>.</p>
+</blockquote>
+<h2 id="présentation-sommaire-de-ocsigen">Présentation sommaire de Ocsigen</h2>
+<p><a href="http://www.ocsigen.org">Ocsigen</a> est une suite de logiciels libres écrite en OCaml, développée par le laboratoire français <a href="http://www.pps.univ-paris-diderot.fr/">PPS</a>. Son objectif principal réside dans la conception d’applications web fiables au moyen du langage de programmation <a href="http://www.ocaml.org">OCaml</a> qui est, en plus d’être extrêmement fiable, très expressif.<br />Ocsigen propose des réponses à des problèmatiques récurrentes du développement web, dans certains cas assez différentes des solutions proposées par d’autres technologies plus populaires.</p>
+<p>Un des arguments en faveur d'Ocsigen est l'usage <em>d'un seul langage pour tout faire</em>, en effet, qu'il s'agisse de l'écriture de la couche statique (le HTML, vérifiant la validité de ce dernier), du Javascript ou du SQL (vérifiant la bonne formation d'une requête), Ocsigen est dôté d'outils et d'extensions de syntaxes pour ne demander au programmeur, qu'une connaissance de Ocaml.</p>
+<blockquote>
+<p>Bien qu'en règle général, j'aime ne pas m'enfermer dans une forte dépendance à un outil, je dois avouer que l'excès de flexibilité de Javascript m'a quelque fois écoeuré. En écrivant du Javascript avec OCaml, on préserve un des intérêts majeur du langage (de mon point de vue), son typage fort. Le déboguage d'applications usant massivement de Javascript n'est plus un problème.</p>
+</blockquote>
+<p>N'utilisant qu'un seul langage, Ocsigen permet de manipuler les couches <em>client-serveur</em> de manière aisée, de la même manière que <a href="https://www.meteor.com/">Meteor.js</a>. Il parait que l'on appelle ça <em>une plate-forme de développement isomorphique</em>, mais je ne suis pas convaincu de l'apellation.</p>
+<p>L'organisation des fichiers et des points d'entrés d'une application réalisée avec Ocsigen est aussi très différente de ce que l'on peut habituellement voir. En effet, toute la navigation est articulée autour d'une notion de service, correspondant à une valeur OCaml à part entière et pouvant être interconnecté à d'autre services. Un service peut être caractérisé par un chemin d'accès, et des paramètres <strong>GET</strong> et <strong>POST</strong> statiquement typés. (De même qu'un service ne peut être qu'une action atomique, sans chemin particulier, nous parlerons dans ce cas de coservice). Les applications Ocsigen étant compilées, un lien ne peut pointer vers un service inexistant, une vérification complémentaire des liens cassés est donc effectué à la compilation.</p>
+<p>A ça s'ajoute <em>Lwt</em>, une bibliothèque pour effectuer des traitements concurrent, soit une fragmentation de tâches en sous-programmes s'exécutant simultanéments (où chaque processus décide lui même de céder la main à son successeur). Cette bibliothèque apporte un confort indéniable dans la construction de tâches asyncrones et son portage pour <strong>Js_of_OCaml</strong> (le Javascript statiquement typé de Ocsigen) est admirablement pertinent dans le cadre d'exécution de Javascript.</p>
+<p>A ces axes brievement présenté s'ajoute une collection d'outil pour résoudre des problèmatiques classiques du développement web, que nous tâcherons de survoler dans la partie pratique de cet article.</p>
+<h3 id="pourquoi-utiliser-ocsigen">Pourquoi utiliser Ocsigen</h3>
+<p>Si j'ai décidé de m'intéresser à Ocsigen, c'est avant tout par intérêt pour le langage OCaml. Cependant, après usage, il est évident que, comme pour le développement d'application classique, le typage statique est véritablement un atout indéniable. On évite une quantité de tests chronophage, et beaucoup de vérifications &quot;plus bas niveau&quot; sont effectuées par Ocsigen. Le développeur n'a donc plus à s'en soucier. De plus, le fait, par exemple, que le compilateur vérifie la bonne sémantique du HTML accélère le flot de travail (n'obligeant plus à vérifier chaque fois la validité de son code HTML).</p>
+<p>De mon point de vue, Ocsigen se pose de bonnes questions face à des problèmatiques récurrente. Et même si je ne pense pas qu'il devienne (même si je l'aimerais) un incontournable absolu, au même titre que PHP ou Ruby On Rails, je pense qu'il met en lumière certaines bonnes pratiques, qui seront sûrement adoptées par d'autres outils, potentiellement plus démocratiques. (On peut noter une certaines similitude avec le projet <a href="http://opalang.org/">OPA</a>, par exemple).</p>
+<h3 id="des-utilisateurs-docsigen">Des utilisateurs d'Ocsigen</h3>
+<p>Ocsigen n'est actuellement pas un des mastodonte de la programmation web, cependant, il possède tout de même une liste d'utilisateurs. En voici quelques'uns choisis à la volée :</p>
+<ul>
+<li><a href="https://code.facebook.com/posts/264544830379293/hack-a-new-programming-language-for-hhvm/">Facebook</a> : Utilisation de Js_of_OCaml (pour leur développement interne).</li>
+<li><a href="http://cumulus.mirai.fr">Cumulus</a> : Un petit outil de partage de liens (dont le code source m'aura été très utile pour mon apprentissage).</li>
+<li><a href="http://www.besport.com/">BeSport</a> : Ils viendraient de recruter Vincent Balat, le chef du projet Ocsigen.</li>
+<li><a href="http://pumgrana.com/">Prumgrana</a> : Un projet qui semble gagner tous les concours où il s'inscrit.</li>
+</ul>
+<p>Quoi qu'il en soit, je n'ai pas eu l'occasion de lire de témoignage désaprobateur sur Ocsigen, sauf peut être ... le mien, après avoir tenté un Hackathon sans une préparation suffisante... mais sachez que j'ai revu mon opinion sur le projet après avoir pris le temps de me plonger dedans.</p>
+<h2 id="implémentation-dune-plateforme-de-micro-blogging">Implémentation d'une plateforme de micro-blogging</h2>
+<p>Pour présenter l'implémentation concrète d'une application avec Ocsigen, j'ai choisi un exemple bien peu original. Cependant, je pense qu'il est intéressant car il permet de présenter plusieurs aspects du framework (création d'un <strong>CRUD</strong>, donc usage d'une base de données et de Macaque, utilisation de <strong>ocaml-safepass</strong> pour crypter les mots de passes et éventuellement l'exposition et l'usage de <strong>webservices</strong>).</p>
+<blockquote>
+<p>Avant de me lancer dans l'explication détaillée, je tiens à préciser que cet article est aussi une manière d'éprouver Ocsigen, pour moi, dans un contexte très pratique. Je ne suis pas du tout un expert et il est possible que certains choix structurels soient discutables. Si vous avez des choses à redire n'hésitez pas à vous servir des commentaires, je suis ouvert à toute critique !</p>
+</blockquote>
+<p>Par soucis de lisibilité (et car ça ne présente pas beaucoup d'intérêt), le CSS sera mis de côté. On évoquera comment utiliser sa propre feuille de style, mais je ne parlerai pas du code CSS quand il n'aura pas de rapport direct avec l'implémentation de l'application.</p>
+<h3 id="installation">Installation</h3>
+<p>L'installation d'Ocsigen est véritablement simple depuis la mise en place de <a href="http://opam.ocamlpro.com/">OPAM</a>. Après l'avoir installé (et initialisé), l'installation de Ocsigen peut se limiter à :</p>
+<p><code>opam install eliom</code></p>
+<p>Pour ma part, j'utilise la version <code>4.01.0</code> de OCaml et l'installation (un peu longue) s'est déroulée sans soucis. L'usage d'OPAM est un véritable plus car c'est lui qui nous permettra d'installer les paquets additionnels nécéssaire à notre application. (On pourrait faire une analogie avec les <em>gems</em> de Ruby par exemple).<br />Sans rentrer dans les détails de l'anatomie du paquet, voici quelques petits compléments explicatifs sur la constitution du paquet <code>eliom</code> :</p>
+<ul>
+<li><code>Js_of_ocaml</code> : Pour produire du Javascript bien typé (et en ocaml)</li>
+<li><code>Macaque</code> et <code>PgOcaml</code> : Pour la construction de requêtes en OCaml</li>
+<li><code>Deriving</code> : Permet de dériver un type dans une représentation (en JSon par exemple)</li>
+<li><code>Lwt</code> : Bibliothèque pour les traitements concurrents</li>
+<li><code>̀Camlp4</code> : Ocsigen offre une collection d'extension de syntaxes</li>
+<li><code>̀TyXML</code> : Une bibliothèque de génération de XML statiquement typé</li>
+</ul>
+<p>Le paquet est aussi évidemment composé d'un serveur web, d'outils pour la gestion des calendriers/dates et de beaucoup d'autres outils. Comme vous pouvez le voir, Ocsigen est riche en composants.</p>
+<h3 id="raisonnement-général-de-lapplication">Raisonnement général de l'application</h3>
+<p>Avant de se lancer dans l'écriture de code OCaml, nous allons penser conceptuellement notre application, proposant des diagrammes minimaliste (et la structure de la base de données).</p>
+<p>Un utilisateur non connecté peut :</p>
+<ul>
+<li>Lire les messages publiés par les titulaires d'un compte</li>
+<li>Se connecter</li>
+<li>S'enregistrer</li>
+</ul>
+<p>Un utilisateur connecté peut :</p>
+<ul>
+<li>Lire les messages publiés par les titulaires d'un compte</li>
+<li>Se déconnecter</li>
+<li>Créer un message</li>
+<li>Afficher ses messages</li>
+<li>Modifier ses messages</li>
+<li>Modifier les paramètres de son compte</li>
+</ul>
+<p>Les constituants de cette application sont donc les <strong>messages</strong> et les <strong>utilisateurs</strong>. Un message sera caractérisé par un <strong>identifiant unique</strong>, une <strong>date de publication</strong>, un <strong>utilisateur posteur</strong> et un <strong>contenu</strong>. Alors qu'un utilisateur sera lui caractérisé par un <strong>identifiant unique</strong>, un <strong>pseudonyme</strong>, une <strong>adresse courriel</strong> et un <strong>mot de passe</strong>.</p>
+<p>Voici un diagramme réellement minimaliste de notre base de de données. Comme il l'indique, la relation est effectuée au niveau de l'utilisateur, qui permet de relier les messages publiés par un utlisateur. (Rien de bien compliqué).</p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">users</th>
+<th align="left"><span class="math"> ← </span> messages</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left"><code>user_id</code> <strong>PK</strong></td>
+<td align="left"><code>message_id</code> <strong>PK</strong></td>
+</tr>
+<tr class="even">
+<td align="left"><code>nickname</code></td>
+<td align="left"><code>publication_date</code></td>
+</tr>
+<tr class="odd">
+<td align="left"><code>email</code></td>
+<td align="left"><code>user_id</code> <strong>FK</strong></td>
+</tr>
+<tr class="even">
+<td align="left"><code>password</code></td>
+<td align="left"><code>content</code></td>
+</tr>
+</tbody>
+</table>
+<p>Et le code SQL (j'utilise <strong>Postgres</strong>) pour générer la base de données est ici, il n'est pas expliqué de manière méticuleuse car je suppose qu'il ne présente absolument rien de nouveau. Cependant, comme pour la structure choisie pour ce tutoriel, je suis ouvert à toute critique dans les commentaires !</p>
+<pre class="sourceCode sql"><code class="sourceCode sql"><span class="co">-- Création des séquences pour l&#39;auto increment</span>
+<span class="kw">CREATE</span> <span class="kw">SEQUENCE</span> users_id_seq; 
+<span class="kw">CREATE</span> <span class="kw">SEQUENCE</span> messages_id_seq;
+ 
+<span class="co">-- Création de la table d&#39;utilisateurs</span>
+<span class="kw">CREATE</span> <span class="kw">TABLE</span> users (
+  user_id <span class="dt">integer</span> <span class="kw">PRIMARY</span> <span class="kw">KEY</span>, 
+  nickname text <span class="kw">NOT</span> <span class="kw">NULL</span>, 
+  email text <span class="kw">NOT</span> <span class="kw">NULL</span>, 
+  <span class="kw">password</span> text <span class="kw">NOT</span> <span class="kw">NULL</span> 
+); 
+
+<span class="co">-- Création de la table de messages </span>
+<span class="kw">CREATE</span> <span class="kw">TABLE</span> messages (
+  message_id <span class="dt">integer</span> <span class="kw">PRIMARY</span> <span class="kw">KEY</span>, 
+  publication_date <span class="dt">timestamp</span> <span class="kw">NOT</span> <span class="kw">NULL</span>, 
+  user_id <span class="dt">integer</span> <span class="kw">REFERENCES</span> users (user_id) 
+      <span class="kw">ON</span> <span class="kw">DELETE</span> <span class="kw">CASCADE</span>,
+  content text <span class="kw">NOT</span> <span class="kw">NULL</span> 
+); </code></pre>
+<p>Rien de bien compliqué, mais c'est amplement suffisant pour notre exemple. Comme on peut le voir, la table message est reliée par le champs <code>user_id</code> et la suppression d'un utilisateur supprimera tous ses messages. A partir de ce stade de l'article, j'estimerai que la base de données à été initialisée et comprend ces deux tables.</p>
+<h3 id="structure-et-construction-dun-premier-projet">Structure et construction d'un premier projet</h3>
+<p>Une manière commune d'initialiser un projet Ocsigen (une fois ce dernier installé) est d'utiliser l'outil <code>eliom-distillery</code> qui crée un projet vierge et les éléments nécéssaire au déploiement d'une application.</p>
+<blockquote>
+<p>L'outil <code>eliom-distillery</code> est très utile pour la construction d'application web. Cependant, certains lui reprocheront l'impossibilité de construire des bibliothèques. Pour ça, je vous conseillerai <code>OASIS</code>. Cependant ce n'est pas la thématique de cet article.</p>
+</blockquote>
+<p>L'usage de <code>eliom-distillery</code> est généralement :</p>
+<pre><code>eliom-distillery -name nom_du_projet</code></pre>
+<p>Qui vous proposera la création d'un répertoire du nom du projet choisi. Ce répertoire contient les fichiers minimums nécéssaires au lancement d'une application minimaliste Ocsigen.<br />Observons maintenant le contenu de ce répertoire:</p>
+<ul>
+<li><code>votre_projet.eliom</code> : premier fichier de votre application</li>
+<li><code>votre_projet.conf.in</code> : le fichier template de configuration. Vous n'avez à priori jamais à y toucher</li>
+<li><code>Makefile</code> : le Makefile de lancement/déploiement de l'application. Vous n'avez à priori jamais à le modifier non plus</li>
+<li><code>Makefile.options</code> : c'est le fichier utilisé pour générer le <code>Makefile</code> et la configuration du serveur. Lui peut être modifié, notamment pour ajouter des extensions externes, ou encore modifier le port du serveur de test (ou d'exécution). Il n'est au final qu'une simple liste de variables à modifier ou enrichir</li>
+<li><code>static/</code> : le répertoire contenant les <em>assets</em> du projets (CSS, images, Javascript normal)</li>
+<li><code>README</code> : ce fichier donne plus ou moins les explications que je donne dans cette rubrique (mais en Anglais!).</li>
+</ul>
+<p>Le fichier <code>.eliom</code> est le premier fichier de sources. Et chaques fichiers <code>.eliom</code> (ou <code>.eliomi</code> pour les interfaces) est considéré automatiquement comme constituant de l'application. (Il est possible d'étendre ce statut aux fichiers <code>.ml</code> et <code>.mli</code> en enrichissant les variables <code>SERVER_FILES</code> et <code>CLIENT_FILES</code>).<br />Voyons le code de ce fichier généré avec la commande <code>eliom-distillery -name microblog</code> :</p>
+<pre class="sourceCode ocaml"><code class="sourceCode ocaml">{shared{
+  <span class="ot">open</span> Eliom_lib
+  <span class="ot">open</span> Eliom_content
+  <span class="ot">open</span> Html5<span class="kw">.</span>D
+}}
+
+<span class="ot">module</span> Microblog_app =
+  Eliom_registration<span class="kw">.</span><span class="dt">App</span> (
+    <span class="kw">struct</span>
+      <span class="kw">let</span> application_name = <span class="st">&quot;microblog&quot;</span>
+    <span class="kw">end</span>)
+
+<span class="kw">let</span> main_service =
+  Eliom_service<span class="kw">.</span>App<span class="kw">.</span>service ~path:[] ~get_params:Eliom_parameter<span class="kw">.</span><span class="dt">unit</span> ()
+
+<span class="kw">let</span> () =
+  Microblog_app<span class="kw">.</span>register
+    ~service:main_service
+    (<span class="kw">fun</span> () () -&gt;
+      Lwt<span class="kw">.</span>return
+        (Eliom_tools<span class="kw">.</span>F<span class="kw">.</span>html
+           ~title:<span class="st">&quot;microblog&quot;</span>
+           ~css:[[<span class="st">&quot;css&quot;</span>;<span class="st">&quot;microblog.css&quot;</span>]]
+           Html5<span class="kw">.</span>F<span class="kw">.</span>(body [
+             h2 [pcdata <span class="st">&quot;Welcome from Eliom&#39;s distillery!&quot;</span>];
+           ])))</code></pre>
+<p>Rassurez-vous, nous étudierons son anatomie plus tard. Retenons juste que par défaut, une application générée avec <code>eliom-distillery</code> ne propose qu'un seul service sur la racine du serveur.</p>
+<h3 id="tester-son-application-fraîchement-générée">Tester son application fraîchement générée</h3>
+<p>Comme l'indique le <code>README</code> (pour ceux l'ayant lu), on peut tester localement son projet, pour cela il suffit de lancer la directive :</p>
+<pre><code>make test.byte</code></pre>
+<p>Qui compilera les fichiers relatifs à notre application et exécutera le serveur sur le port de test (défini dans <code>Makefile.options</code>). La page est donc accessible à <a href="http://localhost:8080">http://localhost:8080</a> (si vous n'avez pas modifié le port de test par défaut). Si vous n'avez pas modifié votre fichier <code>.eliom</code>, une fois le serveur de test lancé, la page devrait fièrement afficher : <em>&quot;Welcome from Eliom's distillery!&quot;</em>.</p>
+<h3 id="anatomie-du-.eliom">Anatomie du .eliom</h3>
+<p>Le fichier <code>eliom</code> généré peut être assez déroutant pour le profane, nous allons donc rapidement survoler ses constituants, non pas pour les détailler méticuleusement, mais pour proposer un survol rapide de ce qui constitue une application Ocsigen.</p>
+<pre class="sourceCode ocaml"><code class="sourceCode ocaml">{shared{
+  <span class="ot">open</span> Eliom_lib
+  <span class="ot">open</span> Eliom_content
+  <span class="ot">open</span> Html5<span class="kw">.</span>D
+}}</code></pre>
+<p>Cette partie ne concerne que les &quot;importations&quot;. Comme vous pouvez le voir, les importations sont entourées par <code>{shared{</code> et <code>}}</code>. Cela indique que les importations sont partagées au client et au serveur.<br />Concrètement, Ocsigen propose un traitement uniforme du client et du serveur, il est donc possible de ne contrôler que du code client ou que du code serveur, ou les deux.</p>
+<ul>
+<li><code>{client{du_code}}</code> : exécuter <code>du_code</code> uniquement côté client</li>
+<li><code>{server{du_code}}</code> : exécuter <code>du_code</code> uniquement côté serveur</li>
+<li><code>{shared{du_code}}</code> : exécutera <code>du_code</code> des deux côtés.</li>
+</ul>
+<p>Sans mise en contexte, le code est toujours exécuté serveur, c'est pour cette raison que l'on verra rarement de code entre <code>{server{ ... }}</code>.</p>
+<pre class="sourceCode ocaml"><code class="sourceCode ocaml"><span class="ot">module</span> Microblog_app =
+  Eliom_registration<span class="kw">.</span><span class="dt">App</span> (
+    <span class="kw">struct</span>
+      <span class="kw">let</span> application_name = <span class="st">&quot;microblog&quot;</span>
+    <span class="kw">end</span>)</code></pre>
+<p>Cette partie génère un module (<code>NomApplication_app</code>) lui conférant (c'est un module généré par un autre, <code>Eliom_registration.App</code> est un foncteur ne requierant qu'une fonction <code>application_name</code>). C'est au travers de ce module que nous enregistrerons nos services. C'est un peu le point d'entrée de l'application.</p>
+<pre class="sourceCode ocaml"><code class="sourceCode ocaml"><span class="kw">let</span> main_service =
+  Eliom_service<span class="kw">.</span>App<span class="kw">.</span>service
+    ~path:[]
+    ~get_params:Eliom_parameter<span class="kw">.</span><span class="dt">unit</span>
+    ()</code></pre>
+<p>Cette partie consiste à définir un service, en l'occurence, le service &quot;par défaut&quot;. Ce dernier n'a pas de chemin (donc il est accessible via l'url : <code>http://monsite</code> et n'attend aucun paramètre.</p>
+<p>Nous préciserons la notion de service plus tard, cependant, c'est au travers de ce mécanisme qu'Ocsigen permet de faire abstraction des fichiers physiques accessibles par l'url, comme c'est le cas en PHP (par exemple).</p>
+<pre class="sourceCode ocaml"><code class="sourceCode ocaml"><span class="kw">let</span> () =
+  Microblog_app<span class="kw">.</span>register
+    ~service:main_service
+    (<span class="kw">fun</span> () () -&gt;
+      Lwt<span class="kw">.</span>return
+        (Eliom_tools<span class="kw">.</span>F<span class="kw">.</span>html
+           ~title:<span class="st">&quot;microblog&quot;</span>
+           ~css:[[<span class="st">&quot;css&quot;</span>;<span class="st">&quot;microblog.css&quot;</span>]]
+           Html5<span class="kw">.</span>F<span class="kw">.</span>(body [
+             h2 [pcdata <span class="st">&quot;Welcome from Eliom&#39;s distillery!&quot;</span>];
+           ])))</code></pre>
+<p>Une fois créé, c'est au lancement de l'application que nous enregistrerons notre service et que nous définirons la page que dois renvoyer le service. Le code ci-dessus exprime que l'on enregistre le service <code>main_service</code>. Et que l'on spécifie que ce service, qui ne reçoit aucun argument GET et POST (les deux units de la fonction anonyme donnée en argument) renverra une page HTML ne contenant, en plus des constituants classique d'une page, un message en <code>&lt;h2&gt;</code> : <code>&quot;Welcome from Eliom's distillery!&quot;</code>.</p>
+<p>Concrètement, un service est un élément (réutilisable) créé et caractérisé par un chemin d'accès et des paramètres. Une fois qu'il est défini, il est enregistré et correspond à un point d'entrée de l'application. Renvoyant, dans beaucoup de cas, une page HTML (conçue, ici, via TyXML, mais il existe d'autres manières).</p>
+<p>Maintenant que nous avons étudié la structure d'une page <code>.eliom</code> générée par <code>eliom-distillery</code>. Nous allons nous familiariser avec les pages et les services au moyen de petits exercices pratiques.</p>
+<h3 id="le-hello-world">Le Hello World</h3>
+<p>Dans cette partie, nous allons tâcher de faire l'habituel <strong>Hello World</strong>, mais avec quelques variantes. En trichant, il serait très facile de ne faire que remplacer <code>h2 [pcdata &quot;Welcome from Eliom's distillery!&quot;];</code> par <code>h2 [pcdata &quot;Hello World&quot;];</code>, mais ce serait, non seulement tricher, et totalement inutile. Cette fois nous allons directement proposer une structure de fichiers et réaliser notre Hello World sur plusieurs modules. Je vous invite à construire, via <code>eliom-distillery</code> un nouveau projet baptisé <code>hello</code>.</p>
+<h4 id="proposition-dorganisation">Proposition d'organisation</h4>
+<p>Comme je l'ai évoqué dans l'introduction, cette structure est issue de mon propre raisonnement (mais tout de même <em>fortemment inspirée</em> de ce que j'ai pu observer sur Github, pour les quelques projets, principalement <a href="http://cumulus.mirai.fr">Cumulus</a>, que j'ai trouvé). Donc si jamais des gurus de Ocsigen ont des commentaires à faire, qu'ils n'hésitent surtout pas ! Cet article est aussi un prétexte à ma progression !</p>
+<p>Donc pour éviter d'avoir des fichiers trop longs, dans le contexte de cette application Hello World, je propose d'organiser le tout de cette manière :</p>
+<ul>
+<li><code>services.eliom</code> : Le module où nous définirons tous nos services.</li>
+<li><code>gui.eliom</code> : (Je ne suis pas convaincu par son nom) Le module qui offrira les fonctions pour la génération de page, pour éviter de répéter le code de structure d'une page.</li>
+<li><code>pages.eliom</code> : Le module qui décrira formellement chaques pages de l'application.</li>
+<li><code>hello.eliom</code> : Le point d'entrée de l'application, soit le fichier qui enregistrera les services, et qui générera le foncteur de l'application.</li>
+</ul>
+<h4 id="elaguons-linutile">Elaguons l'inutile</h4>
+<p>Comme nous allons reprendre notre application depuis le début, je propose de supprimer le superflu (que nous réécrirons dans les bons fichiers). Notre <code>hello.eliom</code> pourra se limiter à :</p>
+<pre class="sourceCode ocaml"><code class="sourceCode ocaml"><span class="co">(* Directives d&#39;importation *)</span>
+{shared{
+  <span class="ot">open</span> Eliom_lib
+  <span class="ot">open</span> Eliom_content
+  <span class="ot">open</span> Html5<span class="kw">.</span>D
+}}
+
+
+<span class="co">(* Création du module principal pour  *)</span>
+<span class="co">(* enregistrer les services, notamment *)</span>
+<span class="ot">module</span> Hello_app =
+  Eliom_registration<span class="kw">.</span><span class="dt">App</span> (
+    <span class="kw">struct</span>
+      <span class="kw">let</span> application_name = <span class="st">&quot;hello&quot;</span>
+    <span class="kw">end</span>)</code></pre>
+<p>En compilant via <code>make test.byte</code>, tout marchera sauf qu'en se rendant à l'adresse du serveur (<a href="http://localhost:8000">ici</a>, j'ai modifié, dans le <code>Makefile.options</code> le port de test car <code>8080</code> est déjà utilisé par <code>Yaws</code>, un serveur Erlang) on arrive sur une erreur 404. Ce qui est logique car aucun service n'a été défini.</p>
+<h4 id="une-page-type">Une page type</h4>
+<p>Avant de concevoir les services, et s'intéresser aux paramètres, nous allons généraliser le comportement d'une page type. Pour cela rendons nous dans le fichier <code>gui.eliom</code>.</p>
+<p>Ce que je propose, c'est d'importer les modules dont nous aurons besoin pour construire le squelette d'une page, ensuite de réaliser trois quatre fonctions.</p>
+<ul>
+<li>Une fonction pour créer une page vide</li>
+<li>Une fonction pour le header</li>
+<li>Une fonction pour le footer</li>
+<li>Une fonction pour créer une page avec le header et le footer.</li>
+</ul>
+<p>Ce qui nous permettra de créer rapidement une page via une simple fonction, ne prenant en argument que la liste de balises nécéssaire à la création du contenu que nous désirons pour une page:</p>
+<pre class="sourceCode ocaml"><code class="sourceCode ocaml"><span class="co">(* Les importations ne doivent être, cette fois  *)</span>
+<span class="co">(* effectives uniquement côté serveur, donc pas la peine  *)</span>
+<span class="co">(* d&#39;utiliser {{shared{{}} *)</span>
+
+<span class="co">(* contient les modules de création de contenu (Html5)*)</span>
+<span class="ot">open</span> Eliom_content
+<span class="co">(* Contient le HTML avec la sémantique du DOM, pour les </span>
+<span class="co">   application hybrides</span>
+<span class="co"> *)</span>
+<span class="ot">open</span> Html5<span class="kw">.</span>D
+
+
+<span class="co">(* Squelette d&#39;une page *)</span>
+<span class="kw">let</span> skeleton title body_content = 
+  Eliom_tools<span class="kw">.</span>F<span class="kw">.</span>html
+    ~title:title
+    ~css:[[<span class="st">&quot;css&quot;</span>; <span class="st">&quot;hello.css&quot;</span>]]
+    (Html5<span class="kw">.</span>F<span class="kw">.</span>body body_content)
+
+<span class="co">(* Header et footer *)</span>
+<span class="kw">let</span> header = 
+  [div 
+     [
+       h1 [pcdata <span class="st">&quot;Application Hello !&quot;</span>]; 
+       hr (); 
+     ]
+  ]
+<span class="kw">let</span> footer = 
+  [div
+    [
+      hr (); 
+      span [pcdata <span class="st">&quot;Fin de l&#39;application&quot;</span>]
+    ]
+  ]
+
+<span class="co">(* Page type *)</span>
+<span class="kw">let</span> std_page body_content =  
+  skeleton 
+    <span class="st">&quot;Hello World application&quot;</span>
+    (header @ body_content @ footer)</code></pre>
+<p>Concrètement, on reproduit, mais de manière plus fragmentée le code fournit par <code>eliom-distillery</code>. La nuance entre <code>Html5.F</code> et <code>Html5.D</code> est assez sensible mais concrètement, retenons juste que les éléments construits par <code>D</code> permettent d'être <em>client-server</em> et manipulé dans les deux côtés. A priori, la structure de notre page (<code>&lt;html&gt;&lt;head&gt;...&lt;/head&gt;&lt;body&gt;</code>) ne devra jamais être manipulée par du Javascript, on peut la créer via le module <code>F</code>. Le contenu de la page pouvant être potentiellement manipulé, on utilisera <code>D</code>.<br />Le manuel de <code>Eliom</code> conseille, pour les débutants de n'utiliser que <code>D</code>. Cependant, je me base sur le code fourni par <code>eliom-distillery</code> pour le squelette de ma page, donc j'utilise <code>F</code>.</p>
+<h4 id="construction-de-html">Construction de HTML</h4>
+<p>Dans la création du module <code>gui.eliom</code>, nous avons créé du Html via <code>TyXML</code>. Voyons en détail comment cela fonctionne. Typiquement les balises sont des fonctions ayant le même nom que leur représentation HTML. De ce fait :</p>
+<pre class="sourceCode ocaml"><code class="sourceCode ocaml">div [pcdata <span class="st">&quot;Hello&quot;</span>]</code></pre>
+<p>produira le code HTML suivant:</p>
+<pre class="sourceCode html"><code class="sourceCode html"><span class="kw">&lt;div&gt;</span>Hello<span class="kw">&lt;/div&gt;</span></code></pre>
+<p>TyXML utilise des types fantômes pour représenter les balises, vous pouvez vous référer à <a href="phantoms.html">cet article</a> qui évoque sommairement le concept sous-jacent. et le <code>pcdata</code> sert à définir du &quot;texte brute&quot;. C'est typiquement le texte racine de chaque balise pouvant afficher du texte.<br />Voyons un exemple un peu plus complexe et essayons de générer ce code via TyXML :</p>
+<pre class="sourceCode html"><code class="sourceCode html"><span class="kw">&lt;div&gt;</span>
+  <span class="kw">&lt;h1&gt;</span>Bonjour !<span class="kw">&lt;/h1&gt;</span>
+  <span class="kw">&lt;hr</span> <span class="kw">/&gt;</span>
+  <span class="kw">&lt;div&gt;</span>
+    <span class="kw">&lt;p&gt;</span>Voici la liste de mes envies :<span class="kw">&lt;/p&gt;</span>
+    <span class="kw">&lt;ul&gt;</span>
+      <span class="kw">&lt;li&gt;</span>Une glace<span class="kw">&lt;/li&gt;</span>
+      <span class="kw">&lt;li&gt;</span>Le livre Real World OCaml<span class="kw">&lt;/li&gt;</span>
+      <span class="kw">&lt;li&gt;</span>Une chemise blanche<span class="kw">&lt;/li&gt;</span>
+    <span class="kw">&lt;/ul&gt;</span>
+  <span class="kw">&lt;/div&gt;</span>
+<span class="kw">&lt;/div&gt;</span></code></pre>
+<p>Voici sa représentation TyXML :</p>
+<pre class="sourceCode ocaml"><code class="sourceCode ocaml">div
+[
+  h1 [pcdata <span class="st">&quot;Bonjour !&quot;</span>];
+  hr ();
+  div
+  [
+    p [pcdata <span class="st">&quot;Voici la liste de mes envies :&quot;</span>];
+    ul
+    [
+      li [pcdata <span class="st">&quot;Une glace&quot;</span>];
+      li [pcdata <span class="st">&quot;Le livre Real World OCaml&quot;</span>];
+      li [pcdata <span class="st">&quot;Une chemise blanche&quot;</span>];
+    ]
+  ]
+]</code></pre>
+<p>Les retours à la ligne ne sont absolument pas obligatoire, ce que l'on retient, c'est qu'une balise pouvant en contenir d'autres a cette sémantique : <code>balise [liste d'autres balises]</code> et qu'une balise &quot;unique&quot;, de cette forme <code>&lt;balise /&gt;</code> (soit <code>&lt;hr /&gt;</code> ou <code>&lt;br /&gt;</code> par exemple) respecte cette sémantique : <code>balise ()</code>.</p>
+<p>Un des avantage de passer par TyXML est de garantir que le HTML produit est correctement typé (selon le W3C) (essayons donc de mettre une <code>&lt;div&gt;</code> dans un <code>&lt;span&gt;</code> et le code ne compilera même pas !), mais aussi d'être généralement plus court à écrire.</p>
+<p>Il est évidemment possible d'enrichir les balises d'attributs, pour ça on utilise l'argument labelisé <code>~a</code>, qui attend une liste d'attributs. Par exemple une liste de classes, ou un identifiant :</p>
+<pre class="sourceCode ocaml"><code class="sourceCode ocaml">div
+  ~a:[a_id <span class="st">&quot;identifiant&quot;</span>; a_class [<span class="st">&quot;rouge; vert&quot;</span>]]
+  [
+     span ~a:[a_id <span class="st">&quot;say_hello&quot;</span>] [pcdata <span class="st">&quot;Hello !&quot;</span>]
+  ]</code></pre>
+<p>Donnera le code HTML suivant :</p>
+<pre class="sourceCode html"><code class="sourceCode html"><span class="kw">&lt;div</span><span class="ot"> id=</span><span class="st">&quot;identifiant&quot;</span><span class="ot"> class=</span><span class="st">&quot;rouge vert&quot;</span><span class="kw">&gt;</span>
+  <span class="kw">&lt;span</span><span class="ot"> id=</span><span class="st">&quot;say_hello&quot;</span><span class="kw">&gt;</span>Hello !<span class="kw">&lt;/span&gt;</span>
+<span class="kw">&lt;/div&gt;</span></code></pre>
+<p>Maintenant, la compréhension de <code>gui.eliom</code> devrait être plus évidente et nous pouvons même modifier ce dernier pour que le contenu donné à la fonction <code>std_page</code> soit placé dans une div à l'identifiant <code>content</code> et que le header et le footer soient aussi identifié !</p>
+<pre class="sourceCode ocaml"><code class="sourceCode ocaml"><span class="co">(* Les importations ne doivent être, cette fois  *)</span>
+<span class="co">(* effectives uniquement côté serveur, donc pas la peine  *)</span>
+<span class="co">(* d&#39;utiliser {{shared{{}} *)</span>
+
+<span class="co">(* contient les modules de création de contenu (Html5)*)</span>
+<span class="ot">open</span> Eliom_content
+<span class="co">(* Contient le HTML avec la sémantique du DOM, pour les </span>
+<span class="co">   application hybrides</span>
+<span class="co"> *)</span>
+<span class="ot">open</span> Html5<span class="kw">.</span>D
+
+
+<span class="co">(* Squelette d&#39;une page *)</span>
+<span class="kw">let</span> skeleton title body_content = 
+  Eliom_tools<span class="kw">.</span>F<span class="kw">.</span>html
+    ~title:title
+    ~css:[[<span class="st">&quot;css&quot;</span>; <span class="st">&quot;hello.css&quot;</span>]]
+    (Html5<span class="kw">.</span>F<span class="kw">.</span>body body_content)
+
+<span class="co">(* Header et footer *)</span>
+<span class="kw">let</span> header = 
+  div 
+    ~a:[a_id <span class="st">&quot;header&quot;</span>]
+    [
+      h1 [pcdata <span class="st">&quot;Application Hello !&quot;</span>]; 
+      hr (); 
+    ]
+
+<span class="kw">let</span> footer = 
+  div
+    ~a:[a_id <span class="st">&quot;footer&quot;</span>]
+    [
+      hr (); 
+      span [pcdata <span class="st">&quot;Fin de l&#39;application&quot;</span>]
+    ]
+    
+<span class="co">(* Page type *)</span>
+<span class="kw">let</span> std_page body_content =  
+  skeleton 
+    <span class="st">&quot;Hello World application&quot;</span>
+    [
+      header; 
+      div ~a:[a_id <span class="st">&quot;content&quot;</span>] body_content;
+      footer
+    ]</code></pre>
+<p>Notre code est plus lisible, et au moyen de CSS, on peut accéder à priori à chaque élément constituants de notre page car le header, le footer et le contenu sont identifiés !</p>
+<h4 id="le-premier-service">Le premier service</h4>
+<p>Nous allons pouvoir attaquer notre premier service, son rôle sera que dès que nous nous rendrons sur la page d'accueil de notre application, on affichera, dans une page type, le texte &quot;Bienvenue le monde&quot;. C'est un service qui ne prendra aucun argument. Il permettra de nous familiariser avec le conception de services.<br />Rendons nous dans le module <code>services.eliom</code> et créons notre premier service :</p>
+<pre class="sourceCode ocaml"><code class="sourceCode ocaml"><span class="co">(* Directives d&#39;importation *)</span>
+
+<span class="co">(* Raccourci vers le module qui permet de définir </span>
+<span class="co"> des services en tout genre *)</span>
+<span class="ot">open</span> Eliom_service
+
+<span class="co">(* Raccourci vers le module qui expose les types </span>
+<span class="co">   d&#39;entrée du service *)</span>
+<span class="ot">open</span> Eliom_parameter
+
+<span class="co">(* Définition du premier service *)</span>
+<span class="kw">let</span> main = 
+  App<span class="kw">.</span>service
+    ~path:[] 
+    ~get_params:<span class="dt">unit</span>
+    ()</code></pre>
+<p>Typiquement, après les directives d'importation, pour rendre le code moins verbeux, on défini dans la variable <code>main</code> un <code>App service</code>, soit un service attaché à l'url racine. Si on avait mit comme path : <code>~path:[&quot;a&quot;;&quot;b&quot;]</code>, l'accès au service aurait été <code>monsite.com/a/b</code>. Cependant ici, nous avons défini le service mère, donc accessible via la racine de l'application. Et on a défini qu'il ne prenait aucun argument <code>GET</code>.</p>
+<p>Attention, des services peuvent pointer vers le même chemin pour peu que leur paramètres (GET ou POST) soient différents.</p>
+<blockquote>
+<p>Le service défini est un App.service, soit un service &quot;Application&quot;, il existe plusieurs types de services différents et nous tâcherons d'en survoler plusieurs durant cette initiation. Pour le moment, nous nous limitons à un App.service.</p>
+</blockquote>
+<p>Maintenant que notre service est préparé, nous allons pouvoir créer la fonction que le service renverra (lorsque nous l'enregistrerons). Pour ça nous allons créer le module <code>pages.eliom</code> dans lequel nous créerons une fonction <code>main</code> dont le rôle sera de renvoyer la page correspondante au service.</p>
+<p>Une fonction de renvoi de service à deux arguments, correspondants respectivements aux paramètres <strong>GET</strong> et <strong>POST</strong>. Notre service <code>main</code> n'a pas de paramètres, il prendra donc deux <code>unit</code>.<br />Il est important de retenir que chaque page doit être mise dans un <strong>contexte Lwt</strong> donc chaque page doit être renvoyée au moyen de la fonction <code>Lwt.return</code>. Pour ça, nous allons modifier légèrement notre fonction <code>std_page</code> pour ne plus avoir à s'en occuper.</p>
+<pre class="sourceCode ocaml"><code class="sourceCode ocaml"><span class="co">(* Page type *)</span>
+<span class="kw">let</span> std_page body_content =  
+  Lwt<span class="kw">.</span>return (
+      skeleton 
+       <span class="st">&quot;Hello World application&quot;</span>
+       [
+         header; 
+         div ~a:[a_id <span class="st">&quot;content&quot;</span>] body_content;
+         footer
+       ]
+    )</code></pre>
+<p>Nous pouvons maintenant nous occuper de <code>Pages.main</code> qui sera très simple car son rôle est simplement d'afficher &quot;Bienvenue le monde !&quot; :</p>
+<pre class="sourceCode ocaml"><code class="sourceCode ocaml"><span class="co">(* contient les modules de création de contenu (Html5)*)</span>
+<span class="ot">open</span> Eliom_content
+<span class="co">(* Contient le HTML avec la sémantique du DOM, pour les </span>
+<span class="co">   application hybrides</span>
+<span class="co"> *)</span>
+<span class="ot">open</span> Html5<span class="kw">.</span>D
+<span class="ot">open</span> Gui
+
+<span class="co">(* Service principal *)</span> 
+<span class="kw">let</span> main () () = 
+  std_page 
+    [
+      h2 [pcdata <span class="st">&quot;Bienvenue le monde !&quot;</span>];
+    ]</code></pre>
+<p>Comme vous pouvez le voir, nous avons importé les mêmes modules que dans le module <code>gui.eliom</code> pour pouvoir écrire confortablement du HTML et nous avons ajouté l'importation du module <code>gui.eliom</code> pour pouvoir appeler directement la fonction <code>std_page</code> (mais c'est vraiment de la coquetterie car j'aurais pu simplement préfixer ma fonction de cette manière : <code>Gui.std_page</code>).</p>
+<p>Maintenant que nous avons tous les ingrédients requis, nous pouvons <strong>enregistrer</strong> notre service pour le rendre accessible. Les personnes qui auraient tenté de compiler le projet auraient eu droit à une belle erreur indiquant que le service n'est pas enregistré. Rendons nous dans le module <code>hello.eliom</code> et procédons à l'enregistrement du module via une fonction exportée par le module <code>Hello_app</code> nommée <code>register</code> et dont la sémantique est :</p>
+<pre class="sourceCode ocaml"><code class="sourceCode ocaml">Hello_app<span class="kw">.</span>register
+  ~service:variable_du_service
+  fonction de renvoi</code></pre>
+<p>Donc nous pouvons enrichir notre module <code>hello.eliom</code> de l'ajout du service (situé dans les dernières lignes).</p>
+<pre class="sourceCode ocaml"><code class="sourceCode ocaml"><span class="co">(* Directives d&#39;importation *)</span>
+{shared{
+  <span class="ot">open</span> Eliom_lib
+  <span class="ot">open</span> Eliom_content
+  <span class="ot">open</span> Html5<span class="kw">.</span>D
+}}
+
+
+<span class="co">(* Création du module principal pour  *)</span>
+<span class="co">(* enregistrer les services, notamment *)</span>
+<span class="ot">module</span> Hello_app =
+  Eliom_registration<span class="kw">.</span><span class="dt">App</span> (
+    <span class="kw">struct</span>
+      <span class="kw">let</span> application_name = <span class="st">&quot;hello&quot;</span>
+    <span class="kw">end</span>)
+
+<span class="co">(* Enregistrement du service main *)</span>
+<span class="kw">let</span> _ =
+  Hello_app<span class="kw">.</span>register 
+    ~service:Services<span class="kw">.</span>main 
+    Pages<span class="kw">.</span>main</code></pre>
+<p>Maintenant nous pouvons compiler notre projet et nous rendre à l'adresse du serveur local, notre &quot;Bienvenue le monde !&quot; devrait normalement être affiché dans le gabarit que nous avions établit au moyen de <code>std_page</code>.</p>
+<p>Il est évident que pour n'effectuer qu'un simple &quot;Hello World&quot;, il aurait été sans doute plus facile de ne modifier que le contenu du fichier généré par <code>eliom-distillery</code>, cependant, maintenant, nous bénéficions d'une architecture saine pour concevoir rapidement d'autres services. Ajoutons par exemple un service <code>bonjourNuki</code> qui affichera &quot;Bonjour Nuki !&quot; sur l'url <code>monsite.com/bonjour/nuki</code>:</p>
+<p>Commençons par créer le service dans <code>services.eliom</code> en y ajoutant ceci :</p>
+<pre class="sourceCode ocaml"><code class="sourceCode ocaml"><span class="kw">let</span> bonjour_nuki =  
+  App<span class="kw">.</span>service
+    ~path:[<span class="st">&quot;bonjour&quot;</span>;<span class="st">&quot;Nuki&quot;</span>]
+    ~get_params:<span class="dt">unit</span>
+    ()</code></pre>
+<p>Ensuite créons sa page dans <code>pages.eliom</code> en lui ajoutant ceci :</p>
+<pre class="sourceCode ocaml"><code class="sourceCode ocaml"><span class="co">(* Service Bonjour Nuki *)</span>
+<span class="kw">let</span> bonjour_nuki () () = 
+  std_page 
+    [
+      h2 [pcdata <span class="st">&quot;Bonjour Nuki&quot;</span>];
+    ]</code></pre>
+<p>Et terminons par enregistrer le service de <code>hello.eliom</code> en y ajoutant ceci :</p>
+<pre class="sourceCode ocaml"><code class="sourceCode ocaml"><span class="co">(* Enregistrement du service Bonjour Nuki *)</span>
+<span class="kw">let</span> _ = 
+  Hello_app<span class="kw">.</span>register
+    ~service:Services<span class="kw">.</span>bonjour_nuki
+    Pages<span class="kw">.</span>bonjour_nuki</code></pre>
+<p>Après le lancement de la commande <code>make test.byte</code>, on peut se rendre à l'adresse (sur le port 8000 dans mon cas, car j'ai modifié mon Makefile.options) : <a href="http://localhost:8000/bonjour/Nuki">http://localhost:8000/bonjour/Nuki</a> qui affichera &quot;Bonjour Nuki&quot;</p>
+<h4 id="utilisation-des-paramètres-get">Utilisation des paramètres GET</h4>
+<p>Notre service <code>bonjourNuki</code> est très mignon, mais franchement peu utile, nous aimerions un peu plus de généricité en proposant un service capable, via l'url, de désigner la personne à saluer. On peut le faire via les paramètres. Nous allons nous servir des variables <strong>GET</strong> pour passer un prénom en argument et le saluer. Pour cela, je propose un nouveau service <code>bonjour</code> qui aura une forme un peu différente du précédent. Premièrement, supprimons tout ce qui est relatif à notre service <code>bonjourNuki</code> et lançons nous (dans <code>services.eliom</code>) :</p>
+<pre class="sourceCode ocaml"><code class="sourceCode ocaml"><span class="co">(* Un service pour saluer *)</span>
+<span class="kw">let</span> bonjour = 
+  App<span class="kw">.</span>service
+    ~path:[:<span class="st">&quot;bonjour&quot;</span>]
+    ~get_params:(<span class="dt">string</span> <span class="st">&quot;prenom&quot;</span>)
+    ()</code></pre>
+<p>Au contraire des deux précédents services, nous lui adjoignons un paramètres <strong>GET</strong> de type string et dont le nom est <code>prenom</code>. L'existence de ce paramètre implique donc que le premier argument de la fonction qui retourne la page doit être une chaîne de caractère :</p>
+<pre class="sourceCode ocaml"><code class="sourceCode ocaml"><span class="co">(* Service pour dire bonjour *)</span> 
+<span class="kw">let</span> bonjour prenom () = 
+  std_page
+    [
+      h2 [pcdata (<span class="st">&quot;Bonjour &quot;</span> ^ prenom)]
+    ]</code></pre>
+<p>Par contre, l'enregistrement du service ne change absolument pas (et c'est un des intérêt principale de notre découpe modulaire) :</p>
+<pre class="sourceCode ocaml"><code class="sourceCode ocaml"><span class="co">(* Enregistrement du services Bonjour *)</span> 
+<span class="kw">let</span> _ = 
+  Hello_app<span class="kw">.</span>register
+    ~service:Services<span class="kw">.</span>bonjour
+    Pages<span class="kw">.</span>bonjour</code></pre>
+<p>Concrètement, nous avons précisé qu'un service <code>bonjour</code> attend un paramètre (passé via l'url) nommé <code>prénom</code>. La fonction page prend ce paramètre en argument et l'affiche. En compilant notre projet, le service principal est toujours accessible et si nous nous rendons à l'url <a href="http://localhost:8000/bonjour?prenom=Nuki">http://localhost:8000/bonjour?prenom=Nuki</a>, notre application affiche bien &quot;Bonjour Nuki&quot;. Vous pouvez remplacer le prénom par n'importe quelle chaine de caractères et notre superbe application saluera bien le prénom passé en argument.</p>
+<p>Si nous tention d'accéder au service <code>bonjour</code> sans lui passer d'argument, ou en lui en passant trop, ou en ommettant le paramètre prénom, l'application affichera une erreur <code>Wront parameters arguments</code>.<br />En effet, les services sont typés et il n'est pas possible d'accéder à une page au travers d'un chemin qui n'a pas été pensé. C'est un gain de temps monumental en vérification. Personnellement, je me souviens de PHP ou je devais vérifier chacune de mes variables pour garantir le bon déroulement de la page. Cette vérification s'ajoute à l'impossibilité de produire du HTML non valide comme un gain de temps réel dans l'écriture d'application web!</p>
+<h4 id="a-propos-de-la-sémantique-des-paramètres">A propos de la sémantique des paramètres</h4>
+<blockquote>
+<p>Même si nous n'avons pas encore survolé les paramètres POST, cette précision est valable pour eux aussi.</p>
+</blockquote>
+<p>Actuellement, nous n'avons travaillé qu'avec un seul paramètre, ça se prêtait bien car la fonction de renvoi ne peut prendre que deux paramètres, un pour les arguments <strong>GET</strong> (le premier) et un pour les arguments <strong>POST</strong> (le second) (ce qui introduit implicitement déjà le fait que l'on peut avoir des services prenant des arguments <strong>POST</strong> ET <strong>GET</strong>).</p>
+<p>Concrètement il est évidemment possible d'utiliser de multiples arguments, par exemple, pour créer un service demandant un prénom, un nom, un age (par exemple), on pourrait imaginer ce service :</p>
+<p>Définition du service dans le module <code>services.eliom</code>:</p>
+<pre class="sourceCode ocaml"><code class="sourceCode ocaml"><span class="kw">let</span> infos = 
+  App<span class="kw">.</span>service
+    ~path:[<span class="st">&quot;informer&quot;</span>]
+    ~get_params:(
+      <span class="dt">string</span> <span class="st">&quot;prenom&quot;</span>
+      ** <span class="dt">string</span> <span class="st">&quot;nom&quot;</span>
+      ** <span class="dt">int</span> <span class="st">&quot;age&quot;</span>
+    ) ()</code></pre>
+<p>On se sert de l'opérateur <code>**</code> pour construire une valeur de services multiples. Du côté de la fonction de renvoi, le paramètre GET sera représenté par <em>n-uplet</em> ayant une forme similaire à une liste :</p>
+<pre class="sourceCode ocaml"><code class="sourceCode ocaml"><span class="co">(* Service de renvoi d&#39;information *)</span>
+<span class="kw">let</span> infos (prenom, (nom, age)) () = 
+  std_page
+  [
+    ul 
+    [
+      li [
+          strong [pcdata <span class="st">&quot;Prenom : &quot;</span>];
+          pcdata prenom
+        ];
+      li [
+          strong [pcdata <span class="st">&quot;Nom : &quot;</span>];
+          pcdata nom
+        ];
+      li [
+          strong [pcdata <span class="st">&quot;Age : &quot;</span>];
+          pcdata (string_of_int age)
+        ];
+      ]
+    ]</code></pre>
+<p>Le type des paramètres de la fonction seront <code>(string * (string * int)) -&gt; unit</code>. La raison qui explique cette forme est que les services sont typés et une manière de représenter des données conjointes est l'utilisation de <em>n-uplet</em>.</p>
+<p>Comme pour les autres services, l'enregistrement est assez simple (et sémantiquement identique aux autres) :</p>
+<pre class="sourceCode ocaml"><code class="sourceCode ocaml"><span class="co">(* Enregistrement du services infos *)</span> 
+<span class="kw">let</span> _ = 
+  Hello_app<span class="kw">.</span>register
+    ~service:Services<span class="kw">.</span>infos
+    Pages<span class="kw">.</span>infos</code></pre>
+<p>Après compilation, je vous invite à tester <a href="http://localhost:8000/informer?prenom=Xavier&amp;age=25&amp;nom=VDW">http://localhost:8000/informer?prenom=Xavier&amp;age=25&amp;nom=VDW</a> qui donne des informations sur ma personne. Comme vous pouvez le voir, les arguments doivent avoir le bon type (mettre <code>chevre</code> en valeur au paramètre <code>age</code> renverra une erreur), par contre, ils ne doivent pas spécialement être dans le bon ordre.</p>
+<h4 id="pour-plus-desthétique-dans-les-urls">Pour plus d'esthétique dans les URL's</h4>
+<p>Il est courant de ne plus voir des url's chargé de paramètres <strong>GET</strong>. Par exemple la page <code>http://www.monsite.com?page=News&amp;id=45</code> devient souvent (pour plaire aux moteurs de recherche) <code>http://www.monsite.com/News/45</code>. On appelle ça de la réécriture d'URL ou de l'URL rewritting. Typiquement il s'agit de paramétrer une route vers une page. Ocsigen dispose d'un mécanisme permettant de rendre les chemins plus agréable à la lecture, au moyen de la fonction <code>suffix</code> sur les paramètres. Réécrivons notre service <code>bonjour</code> pour qu'au lieu de cette adresse <code>http://localhost:8000/bonjour?prenom=Nuki</code> on utilise <code>http://localhost:8000/bonjour/Nuki</code>. Il suffit de modifier la définition de notre service de cette manière :</p>
+<pre class="sourceCode ocaml"><code class="sourceCode ocaml"><span class="co">(* Un service pour saluer *)</span>
+<span class="kw">let</span> bonjour = 
+  App<span class="kw">.</span>service
+    ~path:[<span class="st">&quot;bonjour&quot;</span>]
+    ~get_params:(suffix (<span class="dt">string</span> <span class="st">&quot;prenom&quot;</span>))
+    ()</code></pre>
+<p>L'usage de la fonction <code>suffix</code>, présente dans le module <code>Eliom_parameter</code> permet cette représentation. D'ailleurs il existe d'autre fonctionnalité, comme par exemple celle de rendre certains paramètres optionnels. Pour plus de précisions, je vous invite à vous rendre sur <a href="http://ocsigen.org/eliom/4.1/api/server/Eliom_parameter">la page du manuel correspondante</a>.</p>
+<h4 id="création-de-liens-interne-à-lapplication">Création de liens interne à l'application</h4>
+<p>Un dernier point concernant les paramètres <strong>GET</strong> ou plus généralement en rapport avec les relations entre les services est la construction de liens. Contrairement à des outils plus classiques, Ocsigen crée un lien interne à l'application en créant un lien vers un service. L'avantage de cette méthode est qu'elle permet de prévenir les liens cassés. On ne peut pointer vers un service qui n'existe pas ou encore vers un service en lui donnant les mauvais argument. Pour ça on se sert de la fonction <code>Html.D.a</code>.</p>
+<p>Nous allons ajouter sur notre service principal un lien pour dire bonjour à un certain <code>Nuki</code>, pour ça, il suffit de modifier la fonction <code>Pages.main</code> :</p>
+<pre class="sourceCode ocaml"><code class="sourceCode ocaml"><span class="co">(* Service principal *)</span> 
+<span class="kw">let</span> main () () = 
+  std_page 
+    [
+      h2 [pcdata <span class="st">&quot;Bienvenue le monde !&quot;</span>];
+      a 
+        ~service:Services<span class="kw">.</span>bonjour
+        [pcdata <span class="st">&quot;Dire bonjour à Nuki&quot;</span>]
+        <span class="st">&quot;Nuki&quot;</span>
+    ]</code></pre>
+<p>Le fonctionnement de la fonction <code>a</code> est assez évident. On spécifie le service vers lequel le lien doit pointer. Le texte à afficher et le dernier argument sera le ou les paramètres <strong>GET</strong>. (Dans le cas de paramètres multiples, on utilisera la forme <code>(parametre1, (parametre2, parametre3))</code> par exemple).</p>
+<blockquote>
+<p>A partir de maintenant, je ne rappellerai plus explicitement les fichiers dans lesquels ajouter les portions de codes que je montre car je pense que vous devriez être familier avec la structure pour laquelle j'ai optée. On retiendra que la définition formelle d'un service se fera dans services.eliom, l'enregistrement des services dans hello.eliom, la construction des pages dans pages.eliom et les assets de l'interface dans gui.eliom.</p>
+</blockquote>
+<h4 id="des-formulaires">Des formulaires</h4>
+<p>Maintenant que nous sommes familier avec la construction de services avec des paramètres <strong>GET</strong>, nous pouvons attaquer la construction de services avec des paramètres <strong>POST</strong>.<br />La première chose à faire est de construire un service prenant en argument des paramètres <strong>POST</strong>. Pour ça il faudra enregistrer un autre type de service :</p>
+<pre class="sourceCode ocaml"><code class="sourceCode ocaml"><span class="kw">let</span> post_bonjour = 
+  App<span class="kw">.</span>post_service
+    ~fallback:main
+    ~post_params:(<span class="dt">string</span> <span class="st">&quot;prenom&quot;</span>)
+    ()</code></pre>
+<p>Au contraire d'un service <em>normal</em>, un service <strong>POST</strong> ne possède pas de <strong>~path</strong> et n'est donc pas <em>bookmarkable</em>. En effet, on n'y accède pas via une adresse mais via un formulaire. L'argument <strong>~fallback</strong> permet de rédiriger le service vers un autre service en cas d'erreur (de mauvais typage par exemple). Dans notre cas, on fera pointer le service vers le service par défaut.</p>
+<p>Nous pouvons implémenter la page, elle sera fortemment semblable à la page du service <code>bonjour</code> sauf que l'argument sera au POST et non au GET :</p>
+<pre class="sourceCode ocaml"><code class="sourceCode ocaml"><span class="co">(* Service pour dire bonjour via un post*)</span> 
+<span class="kw">let</span> post_bonjour () prenom = 
+  std_page
+    [
+      h2 [pcdata (<span class="st">&quot;Bonjour &quot;</span> ^ prenom)]
+    ]</code></pre>
+<p>Comme pour les services habituels, il nous faut l'enregistrer pour pouvoir l'utiliser. Une fois plus, il y a bien peu de choses qui changent:</p>
+<pre class="sourceCode ocaml"><code class="sourceCode ocaml"><span class="co">(* Enregistrement du service post_bonjour *)</span>
+<span class="kw">let</span> _ = 
+  Hello_app<span class="kw">.</span>register
+    ~service:Services<span class="kw">.</span>post_bonjour
+    Pages<span class="kw">.</span>post_bonjour</code></pre>
+<p>Maintenant il faut construire un formulaire. Il serait possible de les créer manuellement, mais Ocsigen a prévu (une fois de plus) une manière d'automatiser la construction de formulaires. Pour créer un formulaire, on utilise la fonction <code>Html5.D.post_form</code>. Elle prend en argument un service (vers laquelle le formulaire doit pointer) et une fonction chargée de construire les formulaires. Par exemple, modifions le code de notre service <code>main</code> pour afficher un formulaire pointant vers notre services fraîchement créé :</p>
+<pre class="sourceCode ocaml"><code class="sourceCode ocaml"><span class="co">(* Service principal *)</span> 
+<span class="kw">let</span> main () () = 
+  <span class="kw">let</span> form prenom =
+    [
+      string_input
+    ~name:prenom 
+    ~input_type:<span class="dt">`Text</span>
+    (); 
+      string_input
+    ~input_type:<span class="dt">`Submit</span>
+    ();
+    ]
+  <span class="kw">in</span> 
+  std_page 
+    [
+      h2 [pcdata <span class="st">&quot;Bienvenue le monde !&quot;</span>];
+      a 
+    ~service:Services<span class="kw">.</span>bonjour
+    [pcdata <span class="st">&quot;Dire bonjour à Nuki&quot;</span>]
+    <span class="st">&quot;Nuki&quot;</span>; 
+      br (); 
+      post_form 
+    ~service:Services<span class="kw">.</span>post_bonjour
+    form ()
+    ]</code></pre>
+<p>Concrètement, les deux ajouts importants sont la fonction <code>form</code>, qui servira a générer le formulaire. Il s'agit d'une fonction prenant en argument le paramètre <strong>POST</strong> (en respectant la forme expliquée plus haut : <code>(a, (b, c))</code>. Cette fonction renvoie une liste de balise générée avec TyXML. On se sert des fonctions <code>string_input</code> (et de l'attribut <strong>~name</strong> pour le champ de texte servant a récupérer un paramètre qui lui prendra comme nom un des argument du formulaire).</p>
+<p>Ensuite, on se sert de la fonction <code>post_form</code> pour créer le formulaire en lui donnant le service pointé, le formulaire et <code>unit</code>. Vous pouvez compiler votre application et vous verrez que la page d'accueil est munie d'un petit formulaire fonctionnel, pointant vers le service <code>post_bonjour</code>.</p>
+<h4 id="dautres-types-de-services">D'autres types de services</h4>
+<p>Dans la construction de cette petite application, un peu inutile, nous avons survolés quelques deux types de services. Sachez cependant qu'il en existe beaucoup d'autres, de même qu'il existe des <em>co-services</em>, permettant de ne représenter qu'une action. Ces autres types seront survolés dans la suite de cet article, lors de l'implémentation concrète de notre système de micro-blogging. Pour plus d'informations, n'hésitez pas à vous référer aux liens (et dans le contexte des services plus principalement au lien du manuel de Eliom) fournis en annexe.</p>
+<p>A ce stade-ci, nous avons survolé une manière de naviguer dans la page, mais il reste encore beaucoup de choses a survoler. En effet, nous ne pouvons pas encore réaliser grand chose de concret avec ce que nous avons survolé.</p>
+<h4 id="sur-limplémentation-du-micro-blog">Sur l'implémentation du Micro-blog</h4>
+<p>Je propose de respecter cette architecture de fichier, que nous enrichirons au fur et à mesure de notre implémentation.</p>
+<h3 id="de-la-persistance">De la persistance</h3>
+<p>Nous ne pourrions sérieusement pas penser implémenter notre plateforme de micro-blogging sans avoir appréhender la persistance de données de notre application. En général, la persistance de données est un point crucial du développement d'applications web. Pour notre exemple, j'utiliserai <strong>PostgreSQL</strong>, (l'installation de ce système ne sera pas évoqué ici car il existe beaucoup d'articles bien plus claires que ce que je pourrais écrire).</p>
+<p>Une fois de plus Ocsigen propose une solution étonnemment originale et fiable pour l'écriture de requête SQL. Pour ceux ayant déjà eu l'occasion de faire du PHP, sans framework, et pourquoi pas, avant la démocratisation de <em>PDO</em>, vous serez familier avec le fait d'écrire une requête SQL dans une chaine de caractères qui sera évaluée à l'exécution. Comme nous sommes des programmeurs OCaml, et que nous aimons les applications bien typées, ce genre de technique sauvage est à exclure, car on ne pourrait pas vérifier, <em>a la compilation</em> la cohérence de la requête. Une fois de plus Ocsigen propose une solution étonnemment originale et fiable face à l'écriture de requête, en effet, le framework est dôté d'une bibliothèque, MaCaQue (pour Macro CamL Queries), pour rédiger des requêtes SQL vérifée à la compilation.</p>
+<p>MaCaque permet de minimiser les erreurs à l'éxécution en vérifiant la bonne constitution d'une requête (en tirant partit des types fantômes). La bibliothèque est dôté d'une extension de syntaxe proposant une écriture proche de celle des compréhension.</p>
+<h4 id="inclure-macaque-dans-son-projet">Inclure macaque dans son projet</h4>
+<p>Je vous propose de créer un projet pour l'application de micro-blogging, je l'ai nommée microblog (<code>eliom-distillery -name microblog</code>). Comme l'application Hello, nous organiserons nos fichiers d'une manière similaire, cependant, l'application étant plus riche, nous en aurons un peu plus.</p>
+<p>Grâce au fichier <code>Makefile.options</code>, ajouter Macaque à la liste des paqets est assez simple. Il suffit d'ajouter un <code>SERVER_PACKAGES</code>. Donc la ligne <code>SERVER_PACKAGES :=</code> devient : <code>SERVER_PACKAGES := macaque.syntax</code>. On ajoute l'extension de syntaxe de Macaque (et macaque).</p>
+<p>C'est dans le <code>Makefile.options</code> que l'on ajoute les paquets, séparés par un espace. Macaque ne concerne (à priori) que le serveur, on se contente donc de le placer dans la variable <code>SERVER_PACKAGES</code>. Nous pouvons maintenant utiliser Macaque dans notre projet !</p>
+<h4 id="principe-général">Principe général</h4>
+<p>Macaque repose principalement sur une couche bas niveau de <a href="http://pgocaml.forge.ocamlcore.org/">PG'OCaml</a>, un des outils les plus standards pour la communication avec un serveur Postgres. Il est tout à fait possible de se servir de PG'OCaml pour écrire des requêtes dans un projet utilisant Macaque, ce qui pourra parfois être utile étant donnée que Macaque ne prend pas en charge toutes les fonctionnalités de Postgres. (Cependant, je ne pense pas que c'est dans ce didacticiel que nous nous en rendrons compte).</p>
+<p>Macaque, pour compiler correctement les requêtes (et les vérifier), doit avoir une connaissance du schéma de données des tables, c'est pour cela que je commence généralement par décrire les tables dans un fichiers spécifique (<code>tables.eliom</code>).<br />Ensuite, je développe chacune des interfaces pour les tables dans des fichiers séparés, par exemple, la gestion utilisateur dans un fichier <code>users.eliom</code>.</p>
+<h4 id="accès-à-la-base-de-données-concurrent">Accès à la base de données concurrent</h4>
+<p>Macaque sert à décrire des tables et des requêtes, mais la connexion est toujours prises en charge par PG'OCaml. Par défaut, l'accès à la base de données et bloquant, il n'est donc pas possible d'effectuer plusieurs connexions simultannées, ce qui n'est probablement pas dérangeant pour une application local, mais l'est un peu plus pour une application web, qui peut potentiellement être utilisé par plusieurs utilisateurs simultanément (ça dépend un peu de votre popularité).</p>
+<p>Pour pallier à ce &quot;problème&quot;, on utilisera une version &quot;spécialisée&quot; de Macaque régie en interne par <strong>Lwt</strong>, la bibliothèque de traitement concurrent, permettant un accès non bloquant à la base de données. J'utilise un autre fichier, <code>db.eliom</code> qui contiendra toutes les fonctionnalités relatives à la base de données.</p>
+<p>PG'OCaml dispose d'un foncteur capable de créer les utilitaires nécéssaire à la mise à disposition des outils de communication avec la base de données, nous lui donnerons comme module un module préparé spécialement pour, permettant les accès concurrent à la base de données. Voici le code que j'utilise pour <code>db.eliom</code>, j'ai pris l'habitude de l'utiliser pour chacun de mes projets utilisant Ocsigen et Macaque :</p>
+<pre class="sourceCode ocaml"><code class="sourceCode ocaml"><span class="co">(* Multi access *)</span>
+<span class="ot">module</span> Lwt_thread = <span class="kw">struct</span>
+  <span class="ot">include</span> Lwt
+  <span class="ot">include</span> Lwt_chan
+<span class="kw">end</span> 
+<span class="ot">module</span> Lwt_PGOCaml = PGOCaml_generic<span class="kw">.</span><span class="dt">Make</span>(<span class="dt">Lwt_thread</span>)
+<span class="ot">module</span> Lwt_Query = Query<span class="kw">.</span><span class="dt">Make_with_Db</span>(<span class="dt">Lwt_thread</span>)(<span class="dt">Lwt_PGOCaml</span>)</code></pre>
+<h4 id="connexion-et-fonctions-utilitaires">Connexion et fonctions utilitaires</h4>
+<p>Maintenant que nous avons créé les outils de manipulation de la base de données au moyen du foncteur <code>PGOCaml_generic</code>, nous allons créer la connexion et les outils pour effectueur des requêtes.</p>
+<blockquote>
+<p>En PHP, et dans d'autres technologies, il est courant de définir des variables pour l'hôte, l'utilisateur, le mot de passe et la base de données, ce qui permet de n'avoir qu'un seul fichier à changer en cas de changement de serveur (ou de déploiement). Je me sers d'un fichier <code>config.eliom</code> dans lequel j'ajoute :</p>
+</blockquote>
+<pre class="sourceCode ocaml"><code class="sourceCode ocaml"><span class="co">(* Configuration de la connexion SQL *)</span> 
+<span class="ot">module</span> SQL = 
+  <span class="kw">struct</span>
+    <span class="kw">let</span> host = <span class="st">&quot;localhost&quot;</span>
+    <span class="kw">let</span> user = <span class="st">&quot;nuki_psql&quot;</span>
+    <span class="kw">let</span> pass = <span class="st">&quot;MOT DE PASSE&quot;</span>
+    <span class="kw">let</span> bdd  = <span class="st">&quot;microblog&quot;</span>
+  <span class="kw">end</span></code></pre>
+<p>La connexion n'est pas très complexe, elle repose sur PG'OCaml et se limite à :</p>
+<pre class="sourceCode ocaml"><code class="sourceCode ocaml"><span class="kw">let</span> connect () = 
+  Lwt_PGOCaml<span class="kw">.</span>connect 
+    ~host:Config<span class="kw">.</span>SQL<span class="kw">.</span>host
+    ~user:Config<span class="kw">.</span>SQL<span class="kw">.</span>user
+    ~password:Config<span class="kw">.</span>SQL<span class="kw">.</span>pass
+    ~database:Config<span class="kw">.</span>SQL<span class="kw">.</span>bdd
+    ()</code></pre>
+<p>Et un simple appel de <code>connect ()</code> suffira à connecter à la base de données. Cependant, la connexion à la base de données n'est pas spécialement une action que l'on voudrait effectuer &quot;tout le temps&quot;. Et donc au lieu de se connecter &quot;tout le temps&quot;, on aimerait garder une collection de connexion ouverte et de ne réutiliser les connexions ouvertes libre. Pour ça, il faut utiliser le module <code>Lwt_pool</code>, qui permettra de garder un <code>pool</code> de connexions ouvertes.</p>
+<p>Pour cela, on se servira des deux fonctions du module <code>Lwt_pool</code> :</p>
+<ul>
+<li><code>create n ?check ?validate f</code> où :
+<ul>
+<li><code>n</code> : Nombre de membres maximum de la collection</li>
+<li><code>check</code> : Est appelé si l'utilisation d'un élément de la collection a échoué (nous ne nous en servirons pas dans cet exemple)</li>
+<li><code>validate</code> : Valide un élément avant son utilisation, et le recrée si l'élément est invalide</li>
+<li><code>f</code> : la fonction utilisée pour créer un nouvel élément</li>
+</ul></li>
+<li><code>use p f</code> : Prend un élément du pool <code>p</code>, et le passe en argument à la fonction <code>f</code>.</li>
+</ul>
+<p>Il faut spécifier le type de retour de la fonction <code>pool</code> pour éviter d'avoir une <code>value restriction</code>, ou alors l'emballer dans une fonction qui prend <code>unit</code>. La fonction <code>use</code> utilisant <code>pool</code> permet l'écriture de l'interface d'accès à une base de données. En règle général je me sers toujours de ce code qui ne demande pas de modifications (outre le fichier <code>config.eliom</code>) pour permettre l'accès rapide à une base de données :</p>
+<pre class="sourceCode ocaml"><code class="sourceCode ocaml">
+<span class="co">(* Pool de connexion *)</span>
+<span class="kw">let</span> pool  =
+  <span class="kw">fun</span> () -&gt; (
+    Lwt_pool<span class="kw">.</span>create 
+      <span class="dv">16</span> 
+      ~validate:Lwt_PGOCaml<span class="kw">.</span>alive 
+      connect
+  )
+
+<span class="co">(* Utilisation d&#39;une resource du pool *)</span>
+<span class="kw">let</span> use f ?log x = 
+  Lwt_pool<span class="kw">.</span>use 
+    (pool ()) 
+    (<span class="kw">fun</span> db -&gt; f db ?log  x)
+
+<span class="co">(* Interface d&#39;accès à la base de données *)</span>
+<span class="kw">let</span> view ?log x = 
+  use Lwt_Query<span class="kw">.</span>view ?log x
+
+<span class="kw">let</span> view_one ?log x = 
+  use Lwt_Query<span class="kw">.</span>view_one ?log x
+
+<span class="kw">let</span> view_opt ?log x = 
+  use Lwt_Query<span class="kw">.</span>view_opt ?log x
+
+<span class="kw">let</span> query ?log x = 
+  use Lwt_Query<span class="kw">.</span>query ?log x
+
+<span class="kw">let</span> value ?log x = 
+  use Lwt_Query<span class="kw">.</span>value ?log x
+
+<span class="kw">let</span> value_opt ?log x = 
+  use Lwt_Query<span class="kw">.</span>value_opt ?log x</code></pre>
+<p>L'argument <code>?log</code> permet de renvoyer la la requête sous forme de chaîne sur le channel de sortie, s'il est donné. C'est un outil pratique pour le déboguage.</p>
+<p>Les fonction suffixées par <code>_opt</code> renvoient une option contenant le potentiel résultat, plutôt qu'une liste. Les fonctions suffixées par <code>_one</code> ne renvoient qu'une seule valeur (ou une exception en cas de retour nul). La différence entre une vue et une valeur est que la vue est un résultat de requête classique alors que la valeur est un champ en particulier.</p>
+<p>Maintenant que nous avons tous les outils pour communiquer avec une base de données, nous allons pouvoir décrire formellement les tables que nous utiliserons dans notre application, pour que Macaque ait une connaissance du schéma de base de données et que les requêtes puissent être vérifiées.</p>
+<blockquote>
+<p>A ce stade ci, je partirai du principe que la base de données a bien été créée et que les tables présentées dans la description du projet ont été installées. (De même que le fichier <code>config.eliom</code> est correctement adpté à votre configuration).</p>
+</blockquote>
+<h4 id="description-des-tables-du-projet">Description des tables du projet</h4>
+<p>Pour que Macaque puisse vérifier la bonne sémantique (sur la forme et le typage) d'une requête, elle doit avoir une connaissance de la déscription des tables sur laquelle la requête agit. C'est pour ça que la première étape est la description formelle des tables.<br />Par soucis de modularité (une fois de plus), je décrirai mes tables dans un fichier externe, nommé <code>tables.ml</code>.</p>
+<blockquote>
+<p><strong>Là ou les extensions de syntaxes s'empoignèrent</strong><br />Les plus observateurs remarqueront que cette fois, je n'utilise pas un fichier .eliom, mais un fichier .ml. C'est parce que l'extension de syntaxe de Macaque n'est pas prise en charge par les fichiers elioms, pour éviter des collisions.</p>
+</blockquote>
+<blockquote>
+<p>Il faudra donc modifier le fichier <code>Makefile.options</code> pour lui dire de prendre en compte les fichiers .ml (à la ligne SERVER_FILE). On aura donc le réflexe d'utiliser, chaque fois que l'on se sert de l'extension de syntaxe de Macaque, un fichier .ml.</p>
+</blockquote>
+<p>Toutes mes tables seront décrites dans ce dernier. En plus des tables nous décrirons les séquences (ce qui nous permet de faire les successions d'indexes de notre application). Voici, par exemple, la description de la séquence des indexes des utilisateurs (qui a pour forme <code>CREATE SEQUENCE users_id_seq;</code> :</p>
+<pre class="sourceCode ocaml"><code class="sourceCode ocaml"><span class="kw">let</span> users_id_seq = <span class="st">&lt;:sequence&lt; serial &quot;users_id_seq&quot; &gt;&gt;</span></code></pre>
+<p>L'usage des chevrons indique que l'on utilises les quotations de CamlP4. C'est grâce à une extension de syntaxe que Macaque est si expressif. Le passage de SQL à Macaque n'est pas très complexe, et nous pouvons, dans la volée, décrire la séquence des messages :</p>
+<pre class="sourceCode ocaml"><code class="sourceCode ocaml"><span class="kw">let</span> users_id_seq = <span class="st">&lt;:sequence&lt; serial &quot;users_id_seq&quot; &gt;&gt;</span>
+<span class="kw">let</span> messages_id_seq = <span class="st">&lt;:sequence&lt; serial &quot;messages_id_seq&quot; &gt;&gt;</span> </code></pre>
+<p>(Si nous avions utilisé des <code>Bigint</code>'s pour décrire les identifiants de nos messages et de nos utilisateurs, nous aurions dût utiliser <code>bigserial</code> à la place de <code>serial</code>.</p>
+<p>Comme pour les séquences, la création d'une table n'est pas beaucoup plus complexe. Elle respecte la même sémantique que l'expression de construction d'une séquence, voici un exemple pour la table <code>users</code>:</p>
+<pre class="sourceCode ocaml"><code class="sourceCode ocaml"><span class="kw">let</span> users =
+  <span class="st">&lt;:table&lt; users (</span>
+<span class="st">    user_id integer NOT NULL DEFAULT(nextval $users_id_seq$),</span>
+<span class="st">    nickname text NOT NULL,</span>
+<span class="st">    email text NOT NULL, </span>
+<span class="st">    password text NOT NULL</span>
+<span class="st">  ) &gt;&gt;</span></code></pre>
+<p>Concrètement, il n'y a pas grand changements avec du SQL normal, on retrouve généralement cette forme dans la description d'une table : <code>&lt;:table&lt; NOM_TABLE (STRUCTURE_TABLE) &gt;&gt;</code>. La seule petite différence provient sans doute du fait que la description ne connait pas la clée primaire et les clés secondaires et qu'il faut donc spécifier que <code>user_id</code> ne peut pas être null. Dans cet exemple, on utilise une fonction Macaque (<code>nextval</code>), pour établir l'identifiant. Nous verrons, quand nous nous pencherons sur les requêtes, comment prendre compte de cette annotation.</p>
+<blockquote>
+<p>En général, le code entre $ est du code échappé, provenant de l'extérieur. Nous nous servirons très souvent de cette échappe lors de la construction de requêtes (principalement pour l'insertion).</p>
+</blockquote>
+<p>Maintenant que la manière générique de construire une table a été décrite, on peut sans attendre, décrire la table message, pour laquelle il existe une nuance.</p>
+<pre class="sourceCode ocaml"><code class="sourceCode ocaml"><span class="kw">let</span> messages =
+  <span class="st">&lt;:table&lt; messages (</span>
+<span class="st">    message_id integer NOT NULL</span>
+<span class="st">           DEFAULT(nextval $messages_id_seq$),</span>
+<span class="st">    publication_date timestamptz NOT NULL,</span>
+<span class="st">    user_id integer NOT NULL,</span>
+<span class="st">    content text NOT NULL</span>
+<span class="st">  ) &gt;&gt;</span></code></pre>
+<p>J'utilise le type <code>timestamptz</code> pour tenir compte de la <code>timezone</code>. Il aurait été possible (et conseillé) de mettre, pour la date de publication, une valeur par défaut, mais à moins d'utiliser la dernière version de Macaque, il faut spécifier le type de la table, (dans un mli par exemple) pour éviter d'avoir des variables non généralisées (<code>'_a</code>). Pour le confort de l'exercice, j'ai choisi d'admettre qu'on sauvegardera la date de publication au moment de l'enregistrement.</p>
+<h3 id="interlude-sur-ocaml-safepass">Interlude sur OCaml-safepass</h3>
+<p>Quand on crée un espace membre, il est très courrant de ne <strong>jamais</strong> stocker les mots de passes de manière visible dans la base de données. En PHP, on se sert des fonctions <strong>md5</strong> ou <strong>sha1</strong>. Pour Ocsigen, j'ai pris l'habitude d'utiliser la bibliothèque <strong>safepass</strong>, que l'on peut installer au moyen de la commande <code>opam install safepass</code>. Cette bibliothèque propose des fonctions pour crypter les mots de passes (notamment). Une fois installée, il faut l'ajouter dans la liste des paquets &quot;serveurs&quot; à utiliser. Pour ça on ajoute, dans le <code>Makefile.options</code> le paquet <code>safepass</code>. La ligne correspondante ressemblera à ça : <code>SERVER_PACKAGES := macaque.syntax safepass</code></p>
+<p>A partir de ce moment, nous pouvons disposons d'une bibliothèque de cryptage de mot de passes. Nous nous en servirons lors de l'enregistrement d'un nouvel utilisateur, et lors de sa connexion.</p>
+<h3 id="inscription">Inscription</h3>
+<p>Nous avons à prioir assez de préparation pour implémenter l'inscription. Nous écrirons les fonctions &quot;relatives à la base de données&quot; dans un fichier <code>user.ml</code>.</p>
+<h2 id="liens-de-références-pour-la-rédaction-de-cet-article">Liens de références pour la rédaction de cet article</h2>
+<p>Voici une tentative de construction de liste exhaustive des références que j'ai utilisées pour l'écriture de cet article.</p>
+<ul>
+<li><a href="http://www.ocsigen.org">Page officiel de Ocsigen</a>
+<ul>
+<li><a href="http://www.ocsigen.org/tuto/manual/">Petits tutoriels</a></li>
+<li><a href="http://www.ocsigen.org/eliom/manual/">Manuel de Eliom</a></li>
+<li><a href="http://www.ocsigen.org/lwt/manual/">Manuel de Lwt</a></li>
+<li><a href="http://ocsigen.org/overview/cheatsheet">Cheatsheet</a></li>
+</ul></li>
+<li><a href="https://github.com/ocsigen/macaque">Dépôt de Macaque</a></li>
+<li><a href="https://github.com/Cumulus/Cumulus">Dépôt de Cumulus</a></li>
+<li><a href="http://progmod.eu/nouvelle/18/ocsigen-2-une-bouffee-dair-frais-pour-le-web">Ocsigen : une bouffée d'air frais pour le web</a></li>
+<li><a href="http://www.pps.univ-paris-diderot.fr/~balat/publications/2014balat-rethinking2.pdf">Rethinking web interractions</a></li>
+<li><a href="http://www.pps.univ-paris-diderot.fr/~balat/publications/2009icfp-ocsigen.pdf">Ocsigen at ICFP</a></li>
+<li><a href="http://www.pps.univ-paris-diderot.fr/~balat/publications/2008-balat-eliom-1.1.0.pdf">Guide du programmeur Eliom</a></li>
+</ul>
+
+			</div>
+			
+			<div class="comment_box">
+				<h2>Commentaires</h2>
+				  <div id="disqus_thread"></div>
+					<script type="text/javascript">
+						/* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+						var disqus_shortname = 'nukifw'; // required: replace example with your forum shortname
+						
+						/* * * DON'T EDIT BELOW THIS LINE * * */
+						(function() {
+            var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+            dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+						})();
+					</script> <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+			</div>
+
+		</div>
+		<div id="header-line"></div>
+	</body>
+</html>

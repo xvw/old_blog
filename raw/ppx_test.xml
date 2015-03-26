@@ -1,0 +1,6 @@
+<date>22/12/2014</date>
+<title>Ppx_test</title>
+<subtitle>un environnement de tests réfutables</subtitle>
+<desc>Utilisation des annotations PPX pour OCaml 4.02, en vue de produire un environnement de test "inline", et substituable. L'extension fonctionne au moyen des attributs et ne casse donc actuellement pas le code OCaml sans exécuter les tests.</desc>
+<file>raw/articles/ppx_test.md</file>
+<keywords>ocaml,ppx,ppx_test,unit,test,unitaire,ounit</keywords>

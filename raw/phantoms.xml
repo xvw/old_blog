@@ -1,0 +1,7 @@
+<title>Les types fantômes</title>
+<subtitle>introduction avec OCaml</subtitle>
+<desc>Brève *présentation* des types fantômes avec le langage OCaml, une manière d'ajouter des informations d'usages aux types.
+Cet article n'a pas grand-chose d'inédit. Il s'agit d'une occasion de présenter une utilisation amusante d'un système de types au travers du langage OCaml pour répondre à une problématique pouvant être très coûteuse. </desc>
+<file>raw/articles/phantoms.md</file>
+<keywords>OCaml,type,fantome,phantom,typage, programmation</keywords>
+<date>01/12/2014</date>
