@@ -4,7 +4,7 @@
 
 > Cet article est assez spécial car il parlera de moi. Il mérite le label "life style" et se veut témoin d'un état assez fun que j'ai pu expérimenter récemment, en concevant un programme me rendant réellement service. L'article est donc volontairement court.
 
-Mon parcour en informatique a été assez classique, j'ai commencé par le web, pour ensuite me tourner vers les jeux-vidéos, pour ensuite m'intéresser à l'efficacité des langages utilisés et m'intéresser à l'élégance mise en oeuvre dans l'implémentation d'un problème.
+Mon parcours en informatique a été assez classique, j'ai commencé par le web, pour ensuite me tourner vers les jeux-vidéos, pour ensuite m'intéresser à l'efficacité des langages utilisés et m'intéresser à l'élégance mise en oeuvre dans l'implémentation d'un problème.
 
 ### J'aime bien faire des bibliothèques
 Si l'on fait abstraction des travaux que j'ai dût effectuer dans les entreprises où j'ai eu l'occasion de travailler, on peut dire que j'aime beaucoup *la masturbation intellectuelle*. Et que plutôt que d'aimer construire une page web, je préfère créer une collection d'outils pour faciliter la construction de cette page web. Que plutôt que créer un jeu, je préfère créer une collection d'outils pour faciliter la construction du jeu... soit des outils pour construire... qui ne seront jamais utilisés par personne car même si j'aime bien construire l'outil, j'apprécie moins l'idée de le documenter...
