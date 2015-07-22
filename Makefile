@@ -35,7 +35,7 @@ ocamljs = ocamlfind ocamlc -package js_of_ocaml -package js_of_ocaml.syntax -syn
 # PHONY Rules
 #================================================
 .PHONY: initialize clean all
-all : list clean_obj_files clean_emacs_files clean_bytes push
+all : list clean_before_publish push
 
 #================================================
 # Initialize
@@ -114,7 +114,7 @@ list : about index blogengine.byte
 #================================================
 # Clean rules
 #================================================
-
+clean_before_publish: clean_obj_files clean_obj_files cleanD
 clean : clean_obj_files clean_emacs_files clean_css cleanD
 cleanD: clean_bytes
 
