@@ -1,0 +1,16 @@
+digraph G {
+  A[label="Action effectuée", shape="rect"]
+  B[label="Flagrant delit"]
+  C[label="Modification du corpus", shape="rect"];
+  D[label="Inférence", shape="rect"];
+  E[label="Alignement de l'inférence"];
+  F[label="Hypothèse?"];
+  G[label="Augmente sa jauge d'inférence"];
+  A -> B;
+  B -> C [label=" Oui"];
+  B -> F [label=" Non"];
+  D -> E;
+  E -> C;
+  F -> D [label=" Oui"];
+  F -> G [label=" Non"];  
+}

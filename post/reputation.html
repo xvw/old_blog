@@ -23,7 +23,75 @@
 				<a href="../index.html#Pourquoi-ne-pas-laisser-un-petit-commentaire?!" title="Il y a des commentaires en bas !!!">Retour à l'accueil</a>
 			</div>
 			<div id="article-content">
-				
+				<blockquote>
+<p>Tenter de créer des jeux-vidéos ou des systèmes en relation avec le jeux-vidéo est un passe temps qui m'amuse encore assez souvent. Cet article proposera une réflexion sur l'implémentation (mais surtout le formalisme) d'un système de réputation basé sur <em>beaucoup</em> trop de critères pour être réellement utilisable. L'intérêt principal de cet article (à mon humble avis) est de dresser une liste potentiellement exhaustive des mécaniques à raisonner en cas d'audace de ma part, me poussant à tenter d'implémenter ce genre d'outil pour un jeux-vidéo. L'idée de cet article est issu d'une conversation avec <strong>Ulis</strong> et raffraîchit une vieille conversation avec <strong>Mickaël Spawn</strong>.</p>
+</blockquote>
+<p>Il est courant de voir dans les RPG's (généralement occidentaux, je l'accorde), des mécanismes de réputation, alignant un personnage (jouable) en fonction de ses actions. Même si les deux pôles offrent généralement des avantages, la construction d'une mécanique de réputation fiable est relativement (de mon point de vue) complexe !</p>
+<h3 id="lapproche-naïve">L'approche naïve</h3>
+<p>Cette manière de concevoir une réputation pour le joueur ne sera pas réellement détaillée car, comme son nom l'indique, elle est naïve et ne présente <em>pas assez d'intérêt</em> pour être la seule formule proposée dans cet article.<br />L'idée est de construire deux compteurs d'actions:</p>
+<ul>
+<li>L'un pour les bonnes actions;</li>
+<li>L'autre pour les mauvaises actions.</li>
+</ul>
+<p>Une fonction d'alignement général est possible, cependant, l'avantage de cette méthode est qu'elle permet d'adapter la fonction d'alignement par intervenant. On peut donc rapidement simuler plusieurs réactions à un corpus d'actions réalisées par le joueur.</p>
+<h4 id="quelques-fonctions-dalignement">Quelques fonctions d'alignement</h4>
+<p>Où <em>f</em> est un des deux corpus (quelconque) et <em>ba</em> est le corpus des bonnes actions et <em>ma</em> est le corpus des mauvaises actions. (A noter que les fonctions peuvent être littéralement inversées pour changer la direction de l'état de la réputation. Par exemple, le jugement d'un pervers). On peut éventuellement introduire un opérateur <em>n</em> qui indique le nombre d'actions effectuées (ce qui introduit par extension le fait qu'une action est pondérée).<br />Attention, ces <em>fonctions</em> sont extrèmement simples !</p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">Nomination</th>
+<th align="left">Formule</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Observation constante</td>
+<td align="left"><span class="math"><em>f</em> &gt; <em>x</em></span></td>
+</tr>
+<tr class="even">
+<td align="left">Le positif</td>
+<td align="left"><span class="math"><em>b</em><em>a</em> &gt; <em>m</em><em>a</em></span></td>
+</tr>
+<tr class="odd">
+<td align="left">Le tolérant par rapport à <em>x</em></td>
+<td align="left"><span class="math"><em>b</em><em>a</em>/(<em>n</em>(<em>b</em><em>a</em> + <em>m</em><em>a</em>) &gt; <em>x</em></span></td>
+</tr>
+<tr class="even">
+<td align="left">L'absolument intolérant</td>
+<td align="left"><span class="math"><em>m</em><em>a</em> &gt; 0</span></td>
+</tr>
+<tr class="odd">
+<td align="left">Coefficient absolu</td>
+<td align="left"><span class="math">(<em>m</em><em>a</em> − <em>b</em><em>a</em>)/<em>n</em>(<em>b</em><em>a</em> + <em>m</em><em>a</em>)</span></td>
+</tr>
+</tbody>
+</table>
+<p>Il n'existe pas vraiment de limite dans la définition de fonctions d'alignement et c'est au développeur de les construire en fonction de l'effet voulu. Bien que cette méthode soit présentée comme <em>naïve</em>, elle offre tout de même des embranchements potentiellement complexes.</p>
+<h4 id="bénéficier-de-la-géolocalisation">Bénéficier de la géolocalisation</h4>
+<p>Une approche plus raffinée serait de ne pas se contenter de deux variables (et éventuellement leurs compteurs) mais de stocker dans un tableaux ces données pour pouvoir donner une dimension spatiale à la réputation. Admettant que les individus d'une région <strong>B</strong> ne soient pas au courant des méfaits que le joueur aurait effectué dans une région <strong>A</strong>. Un tel usage permettrait, en plus, d'admettre une potentielle conversations entre certaines membres de chaques régions en se servant d'une proximité géographique.</p>
+<h4 id="constat">Constat</h4>
+<p>On remarque tout de même que la méthode dite <em>naïve</em> offre des perspectives de personnalisation impressionnante et peut sans aucun mal, être une extension de <em>GamePlay</em> très expressive.<br />Par contre, même en créant un tableau de réputation et en les chaînant, on admet une mémoire collective aux individus des différentes régions. Or, il est évidemment possible de segmenter, avec plus de finesse, la notion de réputation, pour que l'interprétation du personnage non joueur se repose sur plus de critères.</p>
+<h2 id="distinction-entre-réputation-et-karma">Distinction entre réputation et Karma</h2>
+<p>Dès lors que les corpus d'action ont une influence générale, on outrepasse la notion &quot;simple&quot; de réputation pour s'apparenter (un peu) à celle du Karma. Soit que le destin agisse ou non en notre faveur est lié par le corpus des actions passées. Dans cet article, on préférerait imaginer un système de réputation entretenant une étroite corélation d'individu à individu, ce qui permet plus de finesse (et de réalisme, même si la quête du réalisme n'est pas notre objectif premier) lors de la génération du comportement d'un intervenant. Une approche d'individu à individu permet de créer des groupes réactionnaires et d'impliquer la notion de Karma (en fonction de l'envie du développeur de donner une portée macroscopique aux actes de ses joueurs).</p>
+<blockquote>
+<p>Comme l'enjeu premier de cet article est de proposer un modèle de relation inférant un système de réputation, il est important de donner à la réputation une notion <em>one by one</em>. Que la réputation ait donc, premièrement, une portée directe avec l'intervenant, et qu'elle puisse, éventuellement, selon certains critères, projeter des caractéristiques complémentaires sur d'autres intervenants.</p>
+</blockquote>
+<p>Pour étendre la portée des bonnes et mauvaises actions, il faut imaginer (la formalisation sera pour plus tard) que les agents du système de réputation entretiennent une potentielle relation. Un simple tableau de réputations ne suffit donc pas.</p>
+<h2 id="formalisme-sur-la-notion-même-de-réputation-et-dactions">Formalisme sur la notion même de réputation et d'actions</h2>
+<p>De bonnes et de mauvaises actions peuvent être simplement perçus comme des jauges (pas obligatoirement communiquantes, comme il a été mis en lumière lors des fonctions d'alignements).<br />En admettant une typologie d'action, on peut proposer quelques schémas de raisonnement par l'intervenant (NPC).</p>
+<h3 id="laction-constatable">L'action constatable</h3>
+<div class="figure">
+<img src="../images/action-constatable.png" />
+</div>
+<p>Cette action, qu'elle soit bonne ou mauvaise, introduit plusieurs variables; en effet, le cas trivial est que l'action est constatée, et on laisse au développeur le loisir d'implémenter la réaction du NPC à sa convenance. Là où cette structure est, à mon sens, intéressante, c'est en cas de non-constatation de l'action. Dans ce genre de scénario, soit on admet que le NPC ne veut pas tirer de conclusion, et dans ce cas, on augmente tout de même une jauge d'inférence.</p>
+<blockquote>
+<p>Les jauges d'inférences sont isomorphes aux corpus d'actions. Elles permettent de donner une sémantique d'accumulation aux raisonnements sur les actions des NPC.</p>
+</blockquote>
+<p>En cas de jugement (par exemple si la jauge d'un NPC <em>sature</em> le NPC émet une opinion et altère le corpus en conséquence.<br />Bien que cette forme d'action introduise une notion de position spatiale (paramètre initiale de constatation), les inférences permettent de créer un réseau d'intèrprétation.</p>
+<h3 id="laction-évoquée">L'action évoquée</h3>
+<div class="figure">
+<img src="../images/action-evoquee.png" />
+</div>
 
 			</div>
 			

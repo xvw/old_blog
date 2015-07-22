@@ -22,7 +22,8 @@ RAW = raw
 BLOGR = $(RAW)/articles
 GIT = master
 CSSFiles	= $(CSS)/common.css $(CSS)/template.css
-
+IMG  = images
+DOT  = $(IMG)/dot
 
 #================================================
 # Compilers
@@ -103,6 +104,12 @@ list : about index blogengine.byte
 	@./$(BYTES)/blogengine.byte 
 	@./$(BYTES)/pagebuilder.byte -o list.html $(TPL)/listarticles.html
 
+#================================================
+# Images
+#================================================
+%.png: $(DOT)/%.dot
+	dot -Tpng $(<) -o $(IMG)/$(@)
+
 
 #================================================
 # Clean rules
@@ -123,8 +130,10 @@ clean_emacs_files :
 	@echo "Clean all emacs files"
 	@rm -rf *~
 	@rm -rf */*~
+	@rm -rf */*/*~
 	@rm -rf \#*\#
 	@rm -rf */\#*\#
+	@rm -rf */*/\#*\#
 
 clean_css :
 	@echo "Clean postprocessed CSS"

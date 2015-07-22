@@ -50,13 +50,25 @@ a {
 
 table {
 		margin: auto;
+    width: 80%;
 }
 
-td {
-		border: 1px solid #257069;
+th, td {
+    padding: 8px;
+		border: Opx solid #257069;
+    font-family: 'Playfair Display', serif;
+}
+
+th {
+    background-color: #f2f2f2;
 }
 
 
 .unviewable {
     display: none;
+}
+img {
+    margin: auto;
+    display: block;
+    max-width: 100%;
 }

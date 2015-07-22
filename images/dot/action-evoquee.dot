@@ -1,0 +1,16 @@
+digraph G {
+ rankdir = "LR";
+ A [shape="rect", label="Action"];
+ B [shape="rect", label="Inférence"];
+ C [label = "Constatée"];
+ D [label = "Supposée"];
+ A -> C;
+ B -> D;
+ E [label = "Relayée", shape="rect"];
+ C -> E;
+ D -> E;
+ F [label = "Enthropie"];
+ E -> F;
+ G [shape="rect", label = "Inteprétation"];
+ F -> G;
+}
