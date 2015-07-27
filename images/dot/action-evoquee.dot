@@ -9,7 +9,7 @@ digraph G {
  E [label = "Relayée", shape="rect"];
  C -> E;
  D -> E;
- F [label = "Enthropie"];
+ F [label = "Entropie"];
  E -> F;
  G [shape="rect", label = "Inteprétation"];
  F -> G;

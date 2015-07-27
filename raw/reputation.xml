@@ -1,6 +1,6 @@
 <date>21/07/2015</date>
 <title>Le réputatiomètre</title>
 <subtitle>Réputation dans un jeu d'aventure</subtitle>
-<desc>Tentative d'implémentation et de formalisme sur la gestion des relations (au travers de la réputation) dans le développement d'un jeu d'aventure (typé RPG).</desc>
+<desc>Tentative d'implémentation et de formalisme sur la gestion des relations (au travers de la réputation) dans le développement d'un jeu d'aventure (typé RPG). Soit un article moins orienté programmation que les précédents. Cet article tâchera de survoler une approche admissible pour un système de réputation cohérent.</desc>
 <file>raw/articles/reputation.md</file>
-<draft/>
+<keywords>réputation,jeu,phantasme,vidéos,jeux-vidéo,rpg,maker,relation</keywords>

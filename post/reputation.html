@@ -8,7 +8,7 @@
 
 		<link rel="stylesheet" href="../css/default.css">
     <meta charset="utf-8">
-    
+    <meta name='keywords' content='r�putation,jeu,phantasme,vid�os,jeux-vid�o,rpg,maker,relation'>
 		<script src="../js/highlight.pack.js"></script>
 		<script>hljs.initHighlightingOnLoad();</script>
   </head>
@@ -24,7 +24,7 @@
 			</div>
 			<div id="article-content">
 				<blockquote>
-<p>Tenter de créer des jeux-vidéos ou des systèmes en relation avec le jeux-vidéo est un passe temps qui m'amuse encore assez souvent. Cet article proposera une réflexion sur l'implémentation (mais surtout le formalisme) d'un système de réputation basé sur <em>beaucoup</em> trop de critères pour être réellement utilisable. L'intérêt principal de cet article (à mon humble avis) est de dresser une liste potentiellement exhaustive des mécaniques à raisonner en cas d'audace de ma part, me poussant à tenter d'implémenter ce genre d'outil pour un jeux-vidéo. L'idée de cet article est issu d'une conversation avec <strong>Ulis</strong> et raffraîchit une vieille conversation avec <strong>Mickaël Spawn</strong>.</p>
+<p>Tenter de créer des jeux-vidéos ou des systèmes en relation avec le jeux-vidéo est un passe temps qui m'amuse encore assez souvent. Cet article proposera une réflexion sur l'implémentation (mais surtout le formalisme) d'un système de réputation basé sur <em>beaucoup</em> trop de critères pour être réellement utilisable. L'intérêt principal de cet article (à mon humble avis) est de dresser une liste potentiellement exhaustive des mécaniques à raisonner en cas d'audace de ma part, me poussant à tenter d'implémenter ce genre d'outil pour un jeux-vidéo. L'idée de cet article est issu d'une conversation avec <strong>Ulis</strong> et raffraîchit une vieille conversation avec <strong>Mickaël Spawn</strong>. L'idée de cet article n'est pas de proposer une implémentation concrètes mais de réfléchir aux points essentiels pour un système de réputation <em>idéal</em> (ce terme est à prendre avec des pincettes), il est probable qu'il soit inimplémentable.</p>
 </blockquote>
 <p>Il est courant de voir dans les RPG's (généralement occidentaux, je l'accorde), des mécanismes de réputation, alignant un personnage (jouable) en fonction de ses actions. Même si les deux pôles offrent généralement des avantages, la construction d'une mécanique de réputation fiable est relativement (de mon point de vue) complexe !</p>
 <h3 id="lapproche-naïve">L'approche naïve</h3>
@@ -78,7 +78,7 @@
 </blockquote>
 <p>Pour étendre la portée des bonnes et mauvaises actions, il faut imaginer (la formalisation sera pour plus tard) que les agents du système de réputation entretiennent une potentielle relation. Un simple tableau de réputations ne suffit donc pas.</p>
 <h2 id="formalisme-sur-la-notion-même-de-réputation-et-dactions">Formalisme sur la notion même de réputation et d'actions</h2>
-<p>De bonnes et de mauvaises actions peuvent être simplement perçus comme des jauges (pas obligatoirement communiquantes, comme il a été mis en lumière lors des fonctions d'alignements).<br />En admettant une typologie d'action, on peut proposer quelques schémas de raisonnement par l'intervenant (NPC).</p>
+<p>De bonnes et de mauvaises actions peuvent être simplement perçues comme des jauges (pas obligatoirement communiquantes, comme il a été mis en lumière lors des fonctions d'alignements).<br />En admettant une typologie d'action, on peut proposer quelques schémas de raisonnement par l'intervenant (NPC).</p>
 <h3 id="laction-constatable">L'action constatable</h3>
 <div class="figure">
 <img src="../images/action-constatable.png" />
@@ -92,6 +92,36 @@
 <div class="figure">
 <img src="../images/action-evoquee.png" />
 </div>
+<p>Elle est concrètement l'entrée de la sortie d'une autre action. La notion d'entropie offre le phénomène connu du <em>téléphone sans fil</em> et permet, au moyen d'un point de vue (qui peut avoir absolument la même forme qu'une fonction d'alignement) d'altérer l'opinion que le NPC peut avoir sur une action, qu'elle soit bonne ou mauvaise.<br />Au contraire d'une action constatable, une action évoquée peut être le résultat d'une inférence. Il est donc imaginable que le joueur soit victime d'altération du jugement d'autrui.</p>
+<h4 id="relai-alternatif">Relai alternatif</h4>
+<p>La notion <em>d'action évoquée</em> introduit l'idée sous-jacente que l'univers du jeu est sujet à un système relationnels fort. Au contraire des contes merveilleux, où le conteur peut justifier toute transmission de savoir par un subterfuge magique, dans le jeux-vidéo, on peut &quot;narrativement&quot; se servir de ce genre d'astuce, mais il faut impérativement une implémentation qui tienne la route.<br />Par soucis de rigueure, on peut supposer que l'intérprétation effectuée dans une action évoquée introduise un jugement par rapport à l'action, mais aussi par rapport à la personne.</p>
+<h2 id="les-faiblesses-de-la-rigueure">Les faiblesses de la rigueure</h2>
+<p>Même si, plus qu'être de la rigueure, cette réflexion sur la réputation penche vers le phantasme (<em>mal placé</em>), on se rend rapidement compte que la modelisation cohérente d'un système de relation et de communication est drastiquement complexe. On pourrait facilement se servir de graphes dirigés pour implémenter le modèle relationnel, cependant, il faudrait impérativement encoder les relations minimales. Ce qui est un travail bien trop lourd pour être viable.<br />Observons par exemple quelques catégories inter-connectables :</p>
+<ul>
+<li>La cellule familiale;</li>
+<li>la géoposition;</li>
+<li>la profession;</li>
+<li>les communications entre les géopositions;</li>
+<li>l'affinité;</li>
+</ul>
+<p>Je ne pense pas avoir été spécialement exhaustif mais il en ressort tout de même un travail de classification assez lourd.</p>
+<h3 id="linteraction-scénarisée">L'interaction scénarisée</h3>
+<p>Il est évident, que dans un RPG, il n'existe d'interaction que si elles sont scénarisées. A ce titre, les intervenants seront invariablement atomiques. Par exemple, deux personnages intervenant tous deux n'assumeront, à deux, que les propriétés d'un seul.<br />Même s'il est envisageable qu'un réseaux d'agents se complexifie au fil du jeu, pour créer des genres de relations, articuler l'évolution d'un personnage en admettant une cohérence de la propagation d'information est beaucoup trop complexe.</p>
+<h2 id="a-lintersection-de-la-naïveté-et-du-réalisme-conclusion">A l'intersection de la naïveté et du réalisme : conclusion</h2>
+<p>Concrètement, une solution se voulant réaliste est sans aucun doute implantable, cependant, les contraintes de paramétrages seraient beaucoup trop lourdes pour être (de mon point de vue) assumables. A ce titre, je propose en conclusion de ce très léger article une structure hybride.</p>
+<h3 id="structure-générale-dun-flux-de-réputation">Structure générale d'un flux de réputation</h3>
+<p>Comme dans les cas évoqués, on suggère deux compteurs de réputation. L'un étant pour les bonnes actions, l'autre pour les mauvaises.<br />On couple ces deux modèles de deux autres modèles respectivement isomorphes proposant un indice de confiance pour chaque jauge, permettant de traiter les cas d'action constatées sans flagrant délit.</p>
+<h3 id="variables-complémentaires">Variables complémentaires</h3>
+<p>Pour simuler la mécanique d'introspection réfléchies sur les actions, je propose d'attribuer une règle de portée (en plus de la pondération) aux actions. Ce qui, en plus de l'automate décrit plus haut, pour toute action propose :</p>
+<ul>
+<li>Un alignement général (bon ou mauvais);</li>
+<li>une pondération de l'action;</li>
+<li>une portée.</li>
+</ul>
+<p>L'idée de la portée est qu'elle permet de toucher des ensembles d'individus précédemment définis. Via la portée, chaque NPC peut, selon la liberté du développeur, interprêté à sa convenance l'alignement d'une action spécifique. De ce fait, on retrouve, en plus des jauges générales, des jauges spécifiques à chaque NPC. L'outillage de configuration en devient moins lourd.</p>
+<h3 id="conclusion">Conclusion</h3>
+<p>L'intersection entre les deux schémas est certes, moins réaliste que celle proposée. Cependant, elle a l'avantage de rester réalisable sans poser un trop grand coût de configuration.<br />La conception d'un jeux-vidéo en tant qu'amateur/indépendant est une tâche assez ingrate et complexe. Il faut donc parfois être capable de mettre ses idéaux/objectifs de côté !<br />C'est un article bien court n'était au final qu'une simple suggestion de piste de réflexion sur le moteur de réputation idéal, il occulte totalement l'incursion dans le game-play. Il est évident que pour concevoir ce genre d'outil servant les mécaniques de jeux, il faut les penser comme un système de jeu ambiant.</p>
+<p>Merci de votre lecture, et j'espère avoir l'occasion de proposer des articles en rapport avec les mécaniques de jeux proposant de réelles implémentations et des solutions moins floues.</p>
 
 			</div>
 			

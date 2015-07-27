@@ -2,7 +2,7 @@
 % Xavier Van de Woestyne
 % Juillet 2015
 
-> Tenter de créer des jeux-vidéos ou des systèmes en relation avec le jeux-vidéo est un passe temps qui m'amuse encore assez souvent. Cet article proposera une réflexion sur l'implémentation (mais surtout le formalisme) d'un système de réputation basé sur *beaucoup* trop de critères pour être réellement utilisable. L'intérêt principal de cet article (à mon humble avis) est de dresser une liste potentiellement exhaustive des mécaniques à raisonner en cas d'audace de ma part, me poussant à tenter d'implémenter ce genre d'outil pour un jeux-vidéo. L'idée de cet article est issu d'une conversation avec **Ulis** et raffraîchit une vieille conversation avec **Mickaël Spawn**.
+> Tenter de créer des jeux-vidéos ou des systèmes en relation avec le jeux-vidéo est un passe temps qui m'amuse encore assez souvent. Cet article proposera une réflexion sur l'implémentation (mais surtout le formalisme) d'un système de réputation basé sur *beaucoup* trop de critères pour être réellement utilisable. L'intérêt principal de cet article (à mon humble avis) est de dresser une liste potentiellement exhaustive des mécaniques à raisonner en cas d'audace de ma part, me poussant à tenter d'implémenter ce genre d'outil pour un jeux-vidéo. L'idée de cet article est issu d'une conversation avec **Ulis** et raffraîchit une vieille conversation avec **Mickaël Spawn**. L'idée de cet article n'est pas de proposer une implémentation concrètes mais de réfléchir aux points essentiels pour un système de réputation *idéal* (ce terme est à prendre avec des pincettes), il est probable qu'il soit inimplémentable.
 
 Il est courant de voir dans les RPG's (généralement occidentaux, je l'accorde),
 des mécanismes de réputation, alignant un personnage (jouable) en fonction
@@ -84,7 +84,7 @@ entretiennent une potentielle relation. Un simple tableau de réputations ne
 suffit donc pas.
 
 ## Formalisme sur la notion même de réputation et d'actions
-De bonnes et de mauvaises actions peuvent être simplement perçus comme des
+De bonnes et de mauvaises actions peuvent être simplement perçues comme des
 jauges (pas obligatoirement communiquantes, comme il a été mis en lumière lors
 des fonctions d'alignements).\
 En admettant une typologie d'action, on peut proposer quelques schémas de
@@ -113,3 +113,94 @@ réseau d'intèrprétation.
 ### L'action évoquée
 
 ![](../images/action-evoquee.png)
+
+Elle est concrètement l'entrée de la sortie d'une autre action. La notion
+d'entropie offre le phénomène connu du *téléphone sans fil* et permet, au
+moyen d'un point de vue (qui peut avoir absolument la même forme qu'une
+fonction d'alignement) d'altérer l'opinion que le NPC peut avoir sur une action,
+qu'elle soit bonne ou mauvaise.\
+Au contraire d'une action constatable, une action évoquée peut être le
+résultat d'une inférence. Il est donc imaginable que le joueur soit victime
+d'altération du jugement d'autrui.
+
+#### Relai alternatif
+La notion *d'action évoquée* introduit l'idée sous-jacente que l'univers du
+jeu est sujet à un système relationnels fort. Au contraire des contes merveilleux, où le conteur peut justifier toute transmission de savoir par un
+subterfuge magique, dans le jeux-vidéo, on peut "narrativement" se servir de
+ce genre d'astuce, mais il faut impérativement une implémentation qui tienne
+la route.\
+Par soucis de rigueure, on peut supposer que l'intérprétation effectuée dans
+une action évoquée introduise un jugement par rapport à l'action, mais aussi
+par rapport à la personne.
+
+## Les faiblesses de la rigueure
+Même si, plus qu'être de la rigueure, cette réflexion sur la réputation penche
+vers le phantasme (*mal placé*), on se rend rapidement compte que la modelisation cohérente d'un système de relation et de communication est
+drastiquement complexe. On pourrait facilement se servir de graphes dirigés
+pour implémenter le modèle relationnel, cependant, il faudrait impérativement
+encoder les relations minimales. Ce qui est un travail bien trop lourd pour
+être viable.\
+Observons par exemple quelques catégories inter-connectables :
+
+*   La cellule familiale;
+*   la géoposition;
+*   la profession;
+*   les communications entre les géopositions;
+*   l'affinité;
+
+Je ne pense pas avoir été spécialement exhaustif mais il en ressort tout de
+même un travail de classification assez lourd.
+
+### L'interaction scénarisée
+Il est évident, que dans un RPG, il n'existe d'interaction que si elles sont
+scénarisées. A ce titre, les intervenants seront invariablement atomiques. Par
+exemple, deux personnages intervenant tous deux n'assumeront, à deux, que les
+propriétés d'un seul. \
+Même s'il est envisageable qu'un réseaux d'agents se complexifie au fil du
+jeu, pour créer des genres de relations, articuler l'évolution d'un personnage
+en admettant une cohérence de la propagation d'information est beaucoup trop
+complexe.
+
+## A l'intersection de la naïveté et du réalisme : conclusion
+Concrètement, une solution se voulant réaliste est sans aucun doute implantable, cependant, les contraintes de paramétrages seraient beaucoup trop
+lourdes pour être (de mon point de vue) assumables. A ce titre, je propose en
+conclusion de ce très léger article une structure hybride.
+
+### Structure générale d'un flux de réputation
+Comme dans les cas évoqués, on suggère deux compteurs de réputation. L'un étant
+pour les bonnes actions, l'autre pour les mauvaises.\
+On couple ces deux modèles de deux autres modèles respectivement isomorphes
+proposant un indice de confiance pour chaque jauge, permettant de traiter les
+cas d'action constatées sans flagrant délit.
+
+### Variables complémentaires
+Pour simuler la mécanique d'introspection réfléchies sur les actions, je propose
+d'attribuer une règle de portée (en plus de la pondération) aux actions. Ce
+qui, en plus de l'automate décrit plus haut, pour toute action propose :
+
+*   Un alignement général (bon ou mauvais);
+*   une pondération de l'action;
+*   une portée.
+
+L'idée de la portée est qu'elle permet de toucher des ensembles d'individus
+précédemment définis. Via la portée, chaque NPC peut, selon la liberté du
+développeur, interprêté à sa convenance l'alignement d'une action spécifique.
+De ce fait, on retrouve, en plus des jauges générales, des jauges spécifiques
+à chaque NPC. L'outillage de configuration en devient moins lourd.
+
+### Conclusion
+L'intersection entre les deux schémas est certes, moins réaliste que celle
+proposée. Cependant, elle a l'avantage de rester réalisable sans poser un trop
+grand coût de configuration.\
+La conception d'un jeux-vidéo en tant qu'amateur/indépendant est une tâche
+assez ingrate et complexe. Il faut donc parfois être capable de mettre ses
+idéaux/objectifs de côté !\
+C'est un article bien court n'était au final qu'une simple suggestion de piste
+de réflexion sur le moteur de réputation idéal, il occulte totalement
+l'incursion dans le game-play. Il est évident que pour concevoir ce genre
+d'outil servant les mécaniques de jeux, il faut les penser comme un système
+de jeu ambiant.
+
+Merci de votre lecture, et j'espère avoir l'occasion de proposer des articles
+en rapport avec les mécaniques de jeux proposant de réelles implémentations
+et des solutions moins floues. 
