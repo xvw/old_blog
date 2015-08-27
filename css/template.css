@@ -156,10 +156,14 @@
 #article-content h2,
 #article-content h3,
 #article-content h4,
-#article-content h5,
 #article-content h6 {
 		border-bottom: 1px solid #c0c0c0;
 		padding: 3px;
+}
+
+#article-content h5 {
+    margin: 0;
+    text-align: center;
 }
 
 #article-content li {

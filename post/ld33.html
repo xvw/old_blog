@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Xavier Van de Woestyne</title>
+		<link href='https://fonts.googleapis.com/css?family=Playfair+Display:400,400italic,700' rel='stylesheet' type='text/css'>
+<link href='https://fonts.googleapis.com/css?family=Droid+Sans:400,700' rel='stylesheet' type='text/css'>
+<link href='../css/app.min.css' rel='stylesheet' type='text/css'>
+
+		<link rel="stylesheet" href="../css/default.css">
+    <meta charset="utf-8">
+    <meta name='keywords' content='jeu,video,vid�o,jeux-vid�o,rpg,maker,ludum,dare,33,git,rme,ruby,game,making,rgss'>
+		<script src="../js/highlight.pack.js"></script>
+		<script>hljs.initHighlightingOnLoad();</script>
+  </head>
+  <body>
+		<div id="content">
+			<div id="header">
+				<h1>Post-mortem Ludum Dare 33 : "you are the monster"</h1>
+				<h2></h2>
+			</div>
+			<div class="center headmenu">
+        <a href="../list.html#Encore-une-lecture?" title="Bonne lecture?">Retour à la liste</a>
+				<a href="../index.html#Pourquoi-ne-pas-laisser-un-petit-commentaire?!" title="Il y a des commentaires en bas !!!">Retour à l'accueil</a>
+			</div>
+			<div id="article-content">
+				<blockquote>
+<p>Cet article portera sur la construction d'un jeu en 72heures lors de la très célèbre JAM <a href="http://ludumdare.com">Ludum Dare</a>. Une expérience très enrichissante qui nous aura permis de finir un jeu original en seulement 72 heures. Cet article propose une brève description de ce qu'est <em>un Ludum Dare</em>, de ce que nous avons fait durant ces 72 heures, et du jeu réalisé. Cet article <strong>spoilera</strong> certains concepts du jeu, il est donc conseillé à ceux désireux de vivre &quot;en temps réel&quot; la surprise de notre production de d'abord terminer notre jeu (d'une durée approximative de 30 minutes) en le téléchargeant sur <a href="http://ludumdare.com/compo/ludum-dare-33/?action=preview&amp;uid=57278">sa fiche officielle</a>. Bonne lecture !</p>
+</blockquote>
+<h2 id="ludum-dare">Ludum Dare</h2>
+<p>Ludum Dare est une compétition créée en 2002 par Geoff Howland, opposant des milliers (2725 jeux pour cette édition) de créateurs de jeux vidéos dans une limite de temps et suivant un thème. Il existe, depuis 2010, la compétition se divise en deux axes :</p>
+<ul>
+<li><strong>Compo</strong>: les participants ont 48h pour produire un jeu (et tout les assets);</li>
+<li><strong>Jam</strong>: autorisation de participer à plusieurs, la compétition dure 72 heures et les règles sont plus flexibles.</li>
+</ul>
+<p>Il n'y a rien à gagner, ce qui donne plus de flexibilité sur les temps de remise, permettant aux créateurs de faire du <em>bug-fix</em> même une fois la limite de temps dépassée.</p>
+<h3 id="les-jeux-notés-par-les-créateurs">Les jeux notés par les créateurs</h3>
+<p>Une fois les jeux soumis, ils entrent en phase de réview et durant trois semaines, ils seront évalués par les compétiteurs ! Au plus un créateur fait de reviews au plus il accroît la visibilité de son projet.<br />Comme il n'y a rien à gagner (outre la fiéreté d'avoir réalisé un jeu en une durée limitée), les notes sont souvent très <em>bon-joueurs</em> et les créateurs bénéficient d'un feed-back souvent de qualité!</p>
+<h3 id="success-stories">Success Stories</h3>
+<p>Il est courant d'y voir de grands noms de la scènes indépendantes, comme par exemple <a href="http://ludumdare.com/compo/author/notch/">Notch</a>, le créateur de Minecraft, <a href="http://ludumdare.com/compo/author/ncannasse/">Nicolas Canasse</a>, le créateur du langage <a href="http://haxe.org/">Haxe</a> et créateur du jeu Evoland qui vient de sortir en version 2 et qui était, à la base une participation au <a href="http://ludumdare.com/compo/ludum-dare-24/?action=preview&amp;uid=8497">Ludum Dare 24</a> (il est à noté que j'ai une affection particulière pour ses créations car en plus de faire de très bon jeu, il est à l'origine de la bibliothèque OCaml ExtLib, qui a servi de base à OCaml Batteries, pour lequel j'ai contribué modestement). On y trouve aussi d'autres créateurs, comme <a href="http://ludumdare.com/compo/author/deepnight/">Deepnight</a>, et sans aucun doute bien d'autres que je ne connais pas :/ .<br />Pour mes amis de RPGMaker, les excellent <a href="http://www.exaheva.blogspot.fr/">Exhavea</a> (Nivalis) et <a href="http://mortisanticosmo.tumblr.com/">Mortis Ghost</a> (Off) ont aussi eu l'occasion de faire une <a href="http://ludumdare.com/compo/ludum-dare-23/?uid=12109">participation très remarquée</a>.</p>
+<h3 id="outils-utilisés">Outils utilisés</h3>
+<p>Sans être exhaustifs, j'ai tout de même eu l'occasion de remarquer que le langage Haxe était assez souvent utilisé mais aussi Unity, ce qui semble évident car au plus j'en entend parler, au plus je ressent l'impression que Unity est le futur du prototypage indépendant !<br />Personnellement, j'ai une affection particulière pour le langage Haxe car son compilateur aurait été écrit en OCaml et que serait un article de ce blog sans du prosélytisme mal placé pour OCaml !</p>
+<h1 id="notre-jeu-almost-heroïc-attention-spoilers">Notre jeu: Almost Heroïc (attention, SPOILERS)</h1>
+<p>Le thème de cette édition étant : &quot;You are the monster&quot;, nous n'avons pas voulu tomber dans les clichés du genre et nous avons tâché de donner une dimension <em>plus abstraite</em> à la notion de monstruosité.<br />Dans cette brève description, il est possible que la modestie ne m'étouffe pas et que je manque sans aucun doute de recul sur notre production... mais... wahou, ce fût 72 heures assez intenses !</p>
+<div class="figure">
+<img src="../images/almost-title.png" />
+</div>
+<p>Pour ce faire, derrière un jeu assez classique dans sa réalisation (même si un soin tout particulier y a été accordé, mais nous en parlerons plus dans la rubrique destinée à sa réalisation).</p>
+<div class="figure">
+<img src="../images/almost-map.png" />
+</div>
+<p>Des environnements rappelant la NES, nous avons pris beaucoup de temps pour la réalisation des ressources graphiques et de l'agencement des cartes !</p>
+<div class="figure">
+<img src="../images/almost-map2.png" />
+</div>
+<p>Le tout couplé à un système de combat <em>ne prenant pas trop de place</em> mais offrant tout de même une certaine tension et du dynamisme !</p>
+<div class="figure">
+<img src="../images/almost-CBS.png" />
+</div>
+<h4 id="attention-cette-partie-dévoile-lintrique-et-lintérêt-du-projet-jouez-y-avant-idéalement">Attention, cette partie dévoile l'intrique et l'intérêt du projet, jouez-y avant, idéalement !</h4>
+<p>L'idée était de partir <a href="http://www.ffdream.com/encyclopedie-cliches_rpg.html">d'une liste des clichés du RPG</a> pour conforter l'utilisateurs dans la réalisation de méfaits (entrer sans se soucier des habitants dans des maisons, piller les coffres, tuer sans scrupule quiconque se met en travers du chemin du héros) et à la fin d'en dresser une collection d'épilogues narrant de manière dramatique les conséquences des actes naïfs du joueurs ! (Par exemple des poules trop stressées pour la ponte, d'une femme se pendant pleurant la mort de son mari jusqu'a la déstruction du monde par des extra-terrestre).</p>
+<h1 id="réalisation">Réalisation</h1>
+<p>Dans cette rubrique, je tâcherai de présenter le déroulé du projet durant ces 72 heures, les choix techniques, la répartition des tâches, et d'émettre quelques conclusions (et éventuellement souligner les difficultés que nous avons dût surmonter, ou que nous n'avons pas réussi à surmonter)!</p>
+<h2 id="contexte">Contexte</h2>
+<p>Pour être honnête, j'étais avec Zangther, dans mon gigantesque 20m2 quand nous avons appris que le Ludum Dare était ce soir, 50 minutes avant le lancement. C'est d'ailleurs car <a href="https://twitter.com/noiracide">Romain68</a> nous a transmis le live de <a href="https://sparklinlabs.com/">l'équipe</a> avec laquelle il travaillait que j'ai décidé de pousser Zangther (à ce moment à coté de moi) et Joke (approximativement à 300km de chez nous) de participer.<br />Après quelques dizaines de minutes de négociation, il a été convenu que l'on essaye <strong>notre tout premier Ludum Dare</strong> !</p>
+<h2 id="choix-de-loutil">Choix de l'outil</h2>
+<p>Sur ce point, il n y eut pas beaucoup de discussion, nous voulions utiliser RPGMaker, et l'outil sur lequel nous travaillons depuis plus d'un an, <a href="http://rmex.github.io">RME</a>, une extension au logiciel RPGMaker VXAce pour offrir plus de flexibilité aux créateur. Une contrainte était cependant d'avoir un jeu qui ne ressemblait pas aux créations habituelles avec RPGMaker.<br />Cet événement était aussi l'occasion de <em>finir</em> un jeu utilisant RME et d'en faire l'apologie !</p>
+<h2 id="h-du-matin-le-thème-tombe-your-are-a-monster">4h du matin, le thème tombe: &quot;Your are a monster&quot;</h2>
+<p>Pour être honnête, même si nous sommes passés par beaucoup de raisonnement (un aviateur nazi, un jeu de tableau basé sur des décisions empirique) nous n'avons pas eu beaucoup de mal à nous mettre d'accord sur la thématique que nous voulions abordés et nous étions tous d'accord pour ne pas faire un jeu où nous incarnions un état de monstruosité explicite ! Après quelques tours de table (par Skype), nous sommes arrivés à l'ébauche de game-design que nous avons suivi jusqu'au bout. Ce genre d'expérience garantit qu'il vaut mieux d'un seul esprit pour concrétiser une idée !<br />Une fois l'idée générale du jeu esquissé nous avons pu établir une petite répartition des tâches :</p>
+<ul>
+<li>Zangther : programmation du système de combat;</li>
+<li>Joke : construction des assets (graphiques et sons);</li>
+<li>Moi : écriture du jeu.</li>
+</ul>
+<p>Nous avons décidé d'utiliser GIT (et Github) pour nous partager le projet et nous avons commencé à travailler chaqun de notre côté ! (Zangther a codé, Joke a dessiné et moi... j'ai écouté de la musique...)</p>
+<h2 id="la-première-journée-complète">La première journée complète</h2>
+<p>Il faut reconnaitre qu'elle a été drastiquement improductive pour certains, Joke et moi avions à faire le soir, il a esquissé quelques graphismes et j'ai esquissé quelques notes. Zangther (qui entre temps était rentré chez lui) de son côté à très bien travaillé sur le système de combat.<br />Il avait été convenu que l'on se retrouve aux alentours de minuit sur Skype pour travailler un maximum. A minuit, seul Zangther était en état de travailler, moi j'étais beaucoup trop alcoolisé et Joke était formellement disparu... Il faudra attendre ... le lendemain... à 14h, pour que nos aventures reprennent.</p>
+<h2 id="le-rush-final">Le rush final</h2>
+<p>Sans être exhaustif sur le déroulé du projet, nous nous sommes vite retrouvé à court de temps, (contraintes professionnels etc.) et la dernière soirée aura vraiment été un travail de collaboration impressionnant, que ce soit Zangther qui traduisait les dialogues que j'écrivais en Français (... je suis moins bon qu'eux en Anglais... et en Français... :v), Joke qui m'épaulait dans le mapping et qui faisait du débogue. La moindre des choses que l'on peut dire est qu'on l'a rendu tout juste avant <em>la dead-line</em> !</p>
+<h2 id="neha-la-musique">Neha: la musique</h2>
+<p>Pendant que nous finissions le jeu, sur le <a href="http://groupe.biloucorp.com">Slack</a> de notre communauté, une quête de musique originale a été faite ! C'est le très excellent Neha, qui nous a offert ses services (accompagné ponctuellement par Hellper et Roi de la Suisse) en nous faisant bénéficier de son expérience en tant que compositeur pour projet Ludum Dare et de son incroyable vitesse à composer (ce message est une petite pique pour Grim, qui a brillé de son absence) ! Il nous a composé tout les thèmes demandé en un temps record !</p>
+<h2 id="zangther-combats-et-écriture">Zangther: combats et écriture</h2>
+<p>Le système de combat aura été intégralement programmé par Zangther, en utilisant RME, il est facilement customisable et piloté par la base de données ! Ce qui fait que nous avons facilement pu l'adapter à tous les ennemis du jeu (attention, ils sont tout de même 4) et l'intégrer parfaitement dans la charte graphique définie.<br />En plus de sa programmation, il a traduit l'intégralité des dialogues que j'ai écrit, repensant aussi leurs agencements dans l'espace et fournissant un premier déboguage.</p>
+<h2 id="joke-ressources-graphiques-sonores-mapping-et-amélioration">Joke: ressources graphiques, sonores, mapping et amélioration</h2>
+<p>Joke a conçu un tileset de toute pièce pour le projet, en parfaite adéquation avec l'image que je m'étais imaginé de notre jeu, encore au stade d'embryon !</p>
+<div class="figure">
+<img src="../images/almost-GFX.png" />
+</div>
+<p>Joke est aussi l'instigateur du nom (Almost Heroïc) du projet, et il a mappé le dernier donjon. Il a aussi conçu presque tous les bruitages du jeu et il a aussi participé au déboguage !</p>
+<h2 id="moi-nuki-...-du-mapping">Moi (Nuki) ... du mapping</h2>
+<p>Pour ma part, je pense avoir tracé les grandes lignes de la narration. J'ai aussi programmé les plus petits systèmes (inventaire, journal des quêtes, système de sauvegarde), mais aussi la mise en scène des interactions avec les personnages non jouables. Et j'ai aussi conçu une grande partie des cartes du jeu.<br />Même si j'ai rédigé la majeur partie des dialogues (en Français), la traduction de Zangther leur apporte beaucoup plus de sens et d'émotion. Je préfère juste me revendiquer comme &quot;mappeur&quot; et un tout petit peu programmeur dans ce projet !</p>
+<h2 id="le-résultat">Le résultat</h2>
+<p>Globalement, Almost Heroïc est un jeu d'une trentaine de minutes, respectant les codes du J-RPG dans sa substance la plus naïve. Le gros retournement de situation se retrouve dans les dernières minutes de jeu.<br />Les quelques heures suivant la remise auront été du <em>bug-fix</em> mais rien de dramatique !<br />Je pense que globalement, on a réussi à faire une majeur partie de ce que l'on désirait et je ne pense pas me tromper en disant que nous sommes tous fier du travail produit !</p>
+<h1 id="retour-sur-les-outils">Retour sur les outils</h1>
+<h2 id="rpgmaker-vxace">RPGMaker VXAce</h2>
+<p>Bien que sûrement <em>moqué</em> par les utilisateurs de logiciels <em>plus complexes</em> (comme Unity, ou Cry Engine), RPGMaker reste à mon sens un outil très mature pour ce genre d'évènements.</p>
+<ul>
+<li>Il offre une abstraction suffisamment poussée de la manipulation des images;</li>
+<li>il offre nativement un éditeur de carte et un modèlisateur d'interaction;</li>
+<li>il permet d'utiliser des structures de données persistantes (base de données);</li>
+<li>il est extensible avec Ruby.</li>
+</ul>
+<p>De plus, couplé avec une bonne connaissance du logiciel, il est possible de sortir des carcans habituels des jeux RPGMaker (il existe des exemples <em>plus impressionnant</em> que notre production (réalisée en 72 heures tout de même !) comme l'excellent <a href="http://www.aedemphia-rpg.net/">Aëdemphia</a>).</p>
+<h2 id="rme">RME</h2>
+<p>Bien qu'il s'agisse de <strong>notre</strong> outil, il a fallu fixé quelques bogues, mais rien de dramatique et nous avons pu étendre le gameplay assez facilement a tel point que non sans subjectivité (:v), je pense que RME est un plus-value indéniable pour un projet RPGMaker VXace !</p>
+<h2 id="git">Git</h2>
+<p>C'est, je pense, le seul gros point noir <em>technologique</em>. En effet, nous avons pris l'habitude d'utiliser Git pour nos projets collaboratif de programmation. Mais un projet étant constitué en majeur partie de <em>simili-binaires</em> (des données sérialisées et passées dans du ZLib), Git n'est pas du tout adapté pour ce genre de projet et énormément de données ont été perdues lors de merges/push. Il faut donc impérativement trouver une alternative à Git (ou éventuellement coder une surcouche), pour éviter ce genre de problèmes.</p>
+<h1 id="conclusion">Conclusion</h1>
+<h2 id="nos-outils">Nos outils</h2>
+<p>Malgré l'erreur de jugement sur Git, je pense que pour le jeu que nous avons réalisés, les outils choisis étaient judicieux et je recommande à toute personne désireuse de faire un RPG <em>oldschool</em> de se pencher sur RPGMaker (disponible depuis peu sur Steam) et RME (un logiciel libre !).</p>
+<h2 id="sur-le-jeu">Sur le jeu</h2>
+<p>Au delà de la satisfaction d'avoir pu produire un jeu en si peu de temps, je pense que nous sommes assez heureux du résultat et les critiques semblent aller dans le sens que le travail effectuée est plutôt bon. (En effet, en vous referrant à la <a href="http://ludumdare.com/compo/ludum-dare-33/?action=preview&amp;uid=57278">fiche</a> du jeu, on peut y lire des premières critiques très positives ! Ce qui nous rends très heureux !</p>
+<h2 id="sur-le-travail-déquipe">Sur le travail d'équipe</h2>
+<p>Pour ma part, ce fût une véritable expérience humaine <strong>très</strong> agréable. J'accepterais avec <strong>joie</strong> de refaire équipe avec chacun des membres de notre petite équipe et je le répète, mais je suis très heureux du travail accompli!</p>
+<h2 id="sur-lévènement">Sur l'évènement</h2>
+<p>Sincèrement, Ludum Dare est un événement super cool. Les productions sont toutes très impressionnantes (même si parfois on y trouve du concept étrange) et l'expérience humaine de réaliser un jeu avec une équipe est vraiment très agréable ! Pour l'heure, nous attendons les résultats avec impatiences ! Et il est fort à parier que je serai là (avec une équipe basée sur les mêmes fondations... je l'éspère) pour l'édition suivante.<br />Merci à toute mon équipe et à toute l'équipe de Ludum Dare et à tous les participants !</p>
+
+			</div>
+			
+			<div class="comment_box">
+				<h2>Commentaires</h2>
+				  <div id="disqus_thread"></div>
+					<script type="text/javascript">
+						/* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+						var disqus_shortname = 'nukifw'; // required: replace example with your forum shortname
+						
+						/* * * DON'T EDIT BELOW THIS LINE * * */
+						(function() {
+            var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+            dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+						})();
+					</script> <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+			</div>
+
+		</div>
+		<div id="header-line"></div>
+	</body>
+</html>

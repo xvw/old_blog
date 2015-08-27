@@ -105,6 +105,13 @@ list : about index blogengine.byte
 	@./$(BYTES)/pagebuilder.byte -o list.html $(TPL)/listarticles.html
 
 #================================================
+# Particular article rule
+#================================================
+% : raw/%.xml css
+	@./$(BYTES)/blogengine.byte $(@)
+
+
+#================================================
 # Images
 #================================================
 %.png: $(DOT)/%.dot

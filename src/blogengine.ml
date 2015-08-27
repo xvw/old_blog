@@ -306,10 +306,17 @@ let generate_rss entries =
   print_endline "blogengine.byte : RSS Generated !"
 
 let () =
-  let e  = entries "raw" in
-  let _ = generate_rss e in
-  e
-  |> List.map entry_to_string
-  |> List.fold_left (fun a x -> a^x) ""
-  |> File.write "raw_list.html" 
+  if (Array.length Sys.argv) > 1
+  then begin
+    let xml = "raw/" ^ Sys.argv.(1) ^ ".xml" in
+    treat_entry xml
+    |> ignore
+  end
+  else
+    let e  = entries "raw" in
+    let _ = generate_rss e in
+    e
+    |> List.map entry_to_string
+    |> List.fold_left (fun a x -> a^x) ""
+    |> File.write "raw_list.html" 
 
