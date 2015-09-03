@@ -107,7 +107,7 @@ list : about index blogengine.byte
 #================================================
 # Particular article rule
 #================================================
-% : raw/%.xml css
+% : raw/%.xml css blogengine.byte
 	@./$(BYTES)/blogengine.byte $(@)
 
 

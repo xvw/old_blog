@@ -1,0 +1,6 @@
+digraph g {
+  A[label="Pages brutes"];
+  B[label="Pages formatées"];
+  C[label="Pages déployées"];
+  A -> B -> C;
+}
