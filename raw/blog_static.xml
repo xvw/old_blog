@@ -1,5 +1,5 @@
-<title>Les générateurs de sites statiques</title>
-<subtitle>Présentation et pistes d'implémentation</subtitle>
+<title>Générateurs de sites statiques</title>
+<subtitle>Pistes d'implémentation</subtitle>
 <desc>Présentation sommaire de ce que sont les générateurs de sites statiques, ainsi qu'une considération sur une manière d'en implémenter un.</desc>
 <keywords>programmation, static, statique, site, blog, générateurs, hakyll, jekyll, nanoc</keywords>
 <date>03/09/2015</date>
