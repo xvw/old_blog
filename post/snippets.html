@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Xavier Van de Woestyne</title>
+		<link href='https://fonts.googleapis.com/css?family=Playfair+Display:400,400italic,700' rel='stylesheet' type='text/css'>
+<link href='https://fonts.googleapis.com/css?family=Droid+Sans:400,700' rel='stylesheet' type='text/css'>
+<link href='../css/app.min.css' rel='stylesheet' type='text/css'>
+
+		<link rel="stylesheet" href="../css/default.css">
+    <meta charset="utf-8">
+    <meta name='keywords' content='bash,unix,snippets,code'>
+		<script src="../js/highlight.pack.js"></script>
+		<script>hljs.initHighlightingOnLoad();</script>
+  </head>
+  <body>
+		<div id="content">
+			<div id="header">
+				<h1>Snippets utiles</h1>
+				<h2>Quelques petits morceaux de codes utiles</h2>
+			</div>
+			<div class="center headmenu">
+        <a href="../list.html#Encore-une-lecture?" title="Bonne lecture?">Retour à la liste</a>
+				<a href="../index.html#Pourquoi-ne-pas-laisser-un-petit-commentaire?!" title="Il y a des commentaires en bas !!!">Retour à l'accueil</a>
+			</div>
+			<div id="article-content">
+				<blockquote>
+<p>Sur cette page, je référencerai les morceaux de codes que je trouve utiles. Je conçois que pour certaines personnes, beaucoup de ces morceaux ne seront pas d'une grande utilité, mais pour ma part, certains m'ont bien aidés !</p>
+</blockquote>
+<h3 id="sommaire">Sommaire</h3>
+<ul>
+<li><a href="#bash">Snippets Bash</a></li>
+<li><a href="#git">Snippets Git</a></li>
+</ul>
+<h2 id="bash">Bash</h2>
+<h4 id="trouver-et-ordonner-les-plus-grands-répertoiresfichiers-de-mon-disque">Trouver (et ordonner) les plus grands répertoires/fichiers de mon disque</h4>
+<pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">su</span>
+<span class="kw">du</span> -hms <span class="ot">$repertoire</span>/* <span class="kw">|</span> <span class="kw">sort</span> -nr <span class="kw">|</span> <span class="kw">head</span></code></pre>
+<h4 id="afficher-rapidement-son-adresse-ip">Afficher rapidement son adresse IP</h4>
+<pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">wget</span> -q -O - ifconfig.co</code></pre>
+<h4 id="renvoyer-rapidement-le-status-http-dune-url">Renvoyer rapidement le status HTTP d'une URL</h4>
+<pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">curl</span> --write-out <span class="st">&quot;%{http_code}\n&quot;</span> \
+<span class="kw">--connect-timeout</span> 10 --max-time 20 -s -I \
+<span class="kw">-L</span> http://www.site.com \
+<span class="kw">--output</span> /dev/null</code></pre>
+<h2 id="git">Git</h2>
+<h4 id="supprimer-les-branches-locales-déjà-fusionnées">Supprimer les branches locales déjà fusionnées</h4>
+<pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">git</span> branch --merged <span class="kw">|</span> <span class="kw">grep</span> -v <span class="st">&quot;\*&quot;</span> <span class="kw">|</span> <span class="kw">xargs</span> -n 1 git branch -d</code></pre>
+
+			</div>
+			
+			<div class="comment_box">
+				<h2>Commentaires</h2>
+				  <div id="disqus_thread"></div>
+					<script type="text/javascript">
+						/* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+						var disqus_shortname = 'nukifw'; // required: replace example with your forum shortname
+						
+						/* * * DON'T EDIT BELOW THIS LINE * * */
+						(function() {
+            var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+            dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+						})();
+					</script> <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+			</div>
+
+		</div>
+		<div id="header-line"></div>
+	</body>
+</html>
