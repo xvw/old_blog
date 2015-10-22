@@ -141,6 +141,7 @@ clean_emacs_files :
 	@rm -rf \#*\#
 	@rm -rf */\#*\#
 	@rm -rf */*/\#*\#
+	@git rm -rf *~
 
 clean_css :
 	@echo "Clean postprocessed CSS"

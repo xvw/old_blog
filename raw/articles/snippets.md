@@ -35,6 +35,15 @@ curl --write-out "%{http_code}\n" \
 --output /dev/null
 ```
 
+#### Tuer skype salement
+
+```bash
+ps -ax | egrep  '[0-9] skype$' | cut -d " " -f 2 | xargs kill -9
+```
+La version de Skype de Linux plante souvent (surtout en cas de groupe de
+conversations actif). Il faut souvent le redemarrer. Cette ligne permet de ne
+pas devoir identifier "manuellement" son PID.
+
 ## Git
 
 #### Supprimer les branches locales déjà fusionnées
@@ -42,3 +51,12 @@ curl --write-out "%{http_code}\n" \
 ```bash
 git branch --merged | grep -v "\*" | xargs -n 1 git branch -d
 ```
+
+#### Génère un gitignore (utilisant gitignore.io) pour un projet
+
+```bash
+curl https://www.gitignore.io/api/emacs,ocaml > .gitignore
+```
+Il suffit de séparer les outils/langages par une virgule après `api/`. Cette
+ligne repose entièrement sur l'excellent site
+[gitignore.io](http://gitignore.io), que je recommande vivement d'utiliser !
