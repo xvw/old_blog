@@ -98,8 +98,12 @@ about : pagebuilder.byte index
 	@echo "Generate About page"
 	@./$(BYTES)/pagebuilder.byte -o apropos.html $(TPL)/apropos.html
 
+projects : about
+	@echo "Generate Project page"
+	@./$(BYTES)/pagebuilder.byte -o projects.html $(TPL)/projects.html
+
 #  Build article list
-list : about index blogengine.byte
+list : projects blogengine.byte
 	@echo "Generate article enumeration"
 	@./$(BYTES)/blogengine.byte 
 	@./$(BYTES)/pagebuilder.byte -o list.html $(TPL)/listarticles.html

@@ -125,6 +125,7 @@
 .enum-links li a {
 		border: 0px solid black;
 		color: #257069;
+    margin-top: 12px;
 }
 
 .a_date {
@@ -176,4 +177,8 @@
 }
 .center {
 		text-align: center;
+}
+
+.a_article li {
+    font-size: 0.8em;
 }

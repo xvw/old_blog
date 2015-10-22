@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Xavier Van de Woestyne - Mes projets</title>
+		{{CSS}}
+    <meta charset="utf-8">
+  </head>
+  <body>
+		<div id="content">
+			<div id="header">
+				<h1>Xavier Van de Woestyne</h1>
+				<h2>Mes projets</h2>
+			</div>
+			<div class="center headmenu">
+        <a href="index.html#IL-FAUT-LIRE-LES-ARTICLES!!!" title="C'est une page rigolote :D">
+          Retour à l'accueil
+        </a>
+			</div>
+
+      <p>
+        Retrouvez ici la liste des projects plus ou moins maintenus. Même si
+        peu d'entre eux sont terminés, je tâcherai de n'en abandonner aucun
+        en cours de route ! Cette liste n'est pas exhaustive de mon activité
+        dans l'informatique, cependant, j'ai tâché de reprendre tous les
+        projets pour lesquels je porte encore de l'intérêt. Je ne suis parfois
+        pas l'auteur exclusif des projets énumérés ci-dessous.
+      </p>
+
+      <h3>Projets viables</h3>
+
+      <p>
+        Cette liste propose des projets déjà utilisables (bien que pour la
+        plupart, non terminé). N'hésitez pas à contribuer sur l'envie vous
+        prend !
+      </p>
+
+      <div class="a_article">
+        <span class="a_date">Site web</span>
+        <a href="http://atelier-prog.github.io" class="a_title">Atelier-prog</a>
+        <p>
+          Atelier-prog est un petit site proposant des exercices ordonnés. Il
+          a été réalisé pour, principalement, des débutants, mais tout le
+          monde à le droit de contribuer en ajoutant des exercices ou des
+          propositions de solutions.
+        </p>
+        <ul class="enum-links">
+          <li>Html</li>
+          <li>Css</li>
+          <li>+participations OCaml, Erlang, C et bien d'autres</li>
+        </ul>
+      </div>
+
+      
+      <div class="a_article">
+        <span class="a_date">Jeux vidéos</span>
+        <a href="http://rmex.github.io" class="a_title">RMEx</a><p>
+          RMEx est une surcouche au logiciel RPGMaker VXAce. Il offre une
+          suite d'outil pour étendre fortement les possibilités de l'outil.
+          Il offre aussi des outils pour structurer correctement des projets
+          avec RPGMaker.
+        </p>
+        <ul>
+          <li><a href="https://github.com/RMEx/RME">DSL d'extension</a></li>
+          <li><a href="http://rmex.github.io/RMEDoc">Une documentation interactive</a></li>
+          <li><a href="http://rmex.github.io/RMEBuilder">Un
+          gestionnaire de paquets</a></li>
+        </ul>
+        <ul class="enum-links">
+          <li>Ruby</li>
+          <li>Win32API</li>
+          <li>JavaScript</li>
+          <li>Erlang</li>
+          <li>Html</li>
+          <li>Css</li>
+        </ul>
+      </div>
+
+
+      <div class="a_article">
+        <span class="a_date">Cadriciel</span>
+        <a href="http://github.com/xvw/phun" class="a_title">Phun</a>
+        <p>
+          Phun est un cadriciel rédigé en PHP pour déployer facilement des
+          applications web sur une architecture
+          <abbr title="Linux Apache MySQL PHP">LAMP</abbr>. Il propose une
+          architecture orientée service, décrite par des URL's. Actuellement,
+          Phun est avant tout un système de routing expressif.
+        </p>
+        <ul class="enum-links">
+          <li>PHP</li>
+        </ul>
+      </div>
+
+      <div class="a_article">
+        <span class="a_date">Bibliothèque</span>
+        <a href="https://github.com/ocaml-batteries-team/batteries-included" class="a_title">OCaml Batteries</a>
+        <p>
+          Batteries est une bibliothèque standard pour OCaml (réalisé par
+          la communauté OCaml). Mes contributions sur le sujet auront
+          principalement portées sur l'implémentation du module <i>Substring</i>,
+          notamment dans l'enrichissement des fonctionnalités et l'implémentation de tests unitaires.
+        </p>
+        <ul class="enum-links">
+          <li>OCaml</li>
+        </ul>
+      </div>
+
+      <div class="a_article">
+        <span class="a_date">Bibliothèque</span>
+        <a href="https://github.com/derniercri/orchestra/blob/master/src/coers.erl" class="a_title">Coers</a>
+        <p>
+          Coers est une toute petite bibliothèque de conversion de données
+          pour le langage Erlang. Elle sert beaucoup de projets internes à
+          l'entreprise qui m'emploie.
+        </p>
+        <ul class="enum-links">
+          <li>Erlang</li>
+        </ul>
+      </div>
+
+      <div class="a_article">
+        <span class="a_date">Bibliothèque</span>
+        <a href="https://github.com/derniercri/jeson" class="a_title">JeSON</a>
+        <p>
+          JeSON permet de sérialiser/déserialiser des records Erlang vers ou via
+          du JSon. Elle repose sur le principe de générer une fonction d'encodage
+          ou de décodage de JSon. Elle utilise une interface typée.
+        </p>
+        <ul class="enum-links">
+          <li>Erlang</li>
+        </ul>
+      </div>
+
+      <h3>Expérimentations</h3>
+
+      <p>
+        Cette énumération propose les projets "jouets", qui ne servent
+        plus énormément ou qui ne sont pas utilisables.
+      </p>
+
+      <div class="a_article">
+        <span class="a_date">Outil</span>
+        <a href="https://github.com/derniercri/erl-test-runner" class="a_title">
+          Erl-test-runner
+        </a>
+        <p>
+          Ce projet rend l'utilisation de
+          <a href="http://travis-ci.com">Travis</a> avec Erlang pour des modules
+          atomiques très simples et n'impose pas Rebar (ou le comportement OTP
+          application). L'outil est très convaincant pour tester en
+          intégration continue, des modules atomiques.<br />
+          Depuis, nous avons pris l'habitude d'utiliser Rebar.
+        </p>
+        <ul class="enum-links">
+          <li>Erlang</li>
+        </ul>
+      </div>
+
+      
+      <div class="a_article">
+        <span class="a_date">Outil</span>
+        <a href="https://github.com/xvw/ppx_test" class="a_title">
+          Ppx_test
+        </a>
+        <p>
+          Ppx_test est un petit préprocesseur qui permet de placer "en inline"
+          des tests unitaires dans un module OCaml. En plus de substituer des
+          portions de code, l'outil propose un tout petit framework de tests
+          unitaires. <br />
+          <a href="http://xvw.github.io/post/ppx_test.html">Un article résumant son fonctionnement</a>
+        </p>
+        <ul class="enum-links">
+          <li>OCaml</li>
+        </ul>
+      </div>
+
+      <div class="a_article">
+        <span class="a_date">Bibliothèque</span>
+        <a href="https://github.com/xvw/js_of_ocaml_bootstrapper" class="a_title">
+          Js_of_ocaml_bootstrapper
+        </a>
+        <p>
+          Js_of_ocaml_bootstrapper est une bibliothèque pour démarrer facilement
+          un projet JavaScript avec <a href="http://ocsigen.org/js_of_ocaml">Js_of_ocaml</a>. L'enjeu de cette
+          bibliothèque est de facilement pouvoir prototyper des applications
+          en très peu de temps. Actuellement, l'API propose des sélécteurs,
+          des processus, des promesses et une API riche pour Canvas.
+        </p>
+        <ul class="enum-links">
+          <li>OCaml</li>
+          <li>JavaScript</li>
+        </ul>
+      </div>
+
+       <div class="a_article">
+        <span class="a_date">Bibliothèque</span>
+        <a href="https://github.com/xvw/oml" class="a_title">
+          OML: Ocaml Mini Library
+        </a>
+        <p>
+          Oml est une toute petite bibliothèque OCaml qui implémente une
+          interface monadique riche pour certaines structures de données. Bien
+          que beaucoup moins riche que Batteries ou Core, je continue ce projet
+          pour me former au design de bibliothèques avec OCaml.
+        </p>
+        <ul class="enum-links">
+          <li>OCaml</li>
+        </ul>
+       </div>
+
+       <div class="a_article">
+        <span class="a_date">Bibliothèque</span>
+        <a href="https://github.com/xvw/piplet" class="a_title">
+          Piplet
+        </a>
+        <p>
+          Piplet est un projet qui avance drastiquement lentement pour permettre
+          la création de pages statiques reposant sur Github. La bibliothèque
+          exporte une série de commandes Unix ainsi qu'un Binding de Pandoc
+          pour la conversion de textes de Markdown à Html ou PDF. 
+        </p>
+        <ul class="enum-links">
+          <li>OCaml</li>
+        </ul>
+       </div>
+
+       
+       <h3>Jeux-vidéos</h3>
+
+
+      <p>
+        Il m'arrive parfois d'avoir envie d'essayer de créer des jeux-vidéos.
+        En voici une liste de ceux que j'accepte de montrer.
+      </p>
+       
+      <div class="a_article">
+        <span class="a_date">Jeux vidéos</span>
+        <a href="http://rpgmaker.net/games/8124/" class="a_title">
+          Almost Heroïc
+        </a>
+        <p>
+          Un jeu réalisé en 72 heures à l'occasion du Ludum Dare 33, dont le
+          thème était : "You are the monster". Le jeu a été réalisé de toute
+          pièce en 72 heures avec Joke, Zangther, Neha et moi même. Nous
+          nous sommes servi de RPGMaker VXAce et RME. Le jeu est arrivé
+          60ème (sur plus de 1500 participations).
+        </p>
+        <ul>
+          <li><a href="http://ludumdare.com/compo/ludum-dare-33/?action=preview&uid=57278">Fiche Ludum Dare</a></li>
+        </ul>
+        <ul class="enum-links">
+          <li>Ruby</li>
+          <li>RME</li>
+        </ul>
+      </div>
+
+             
+		</div>
+		<div id="header-line"></div>
+	</body>
+</html>
