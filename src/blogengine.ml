@@ -177,6 +177,7 @@ let create_html_file t s md base kw =
   |> Regexp.replace "{{KEYWORDS}}" (kwd kw)
   |> Regexp.replace "href='css/" "href='../css/"
   |> Regexp.replace "{{article-title}}" t
+  |> Regexp.replace "{{article-base}}" base
   |> Regexp.replace
     "{{article-subtitle}}"
     (match s with Some x -> x | _ -> "")

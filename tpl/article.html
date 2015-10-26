@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Xavier Van de Woestyne</title>
+    <title>xvw : {{article-title}}</title>
 		{{CSS}}
 		<link rel="stylesheet" href="../css/default.css">
     <meta charset="utf-8">
@@ -10,6 +10,19 @@
 		<script>hljs.initHighlightingOnLoad();</script>
   </head>
   <body>
+    <div id="ui-notif" class="notif">
+      <div>
+      Cet article est ouvert à la modification, correction orthographique
+      [
+      <a href="https://github.com/xvw/xvw.github.io/blob/master/raw/articles/{{article-base}}.md">
+        Voir sur Github
+      </a>
+      ]
+      </div>
+      <div id="close-alert" class="right-child">
+        x
+      </div>
+    </div>
 		<div id="content">
 			<div id="header">
 				<h1>{{article-title}}</h1>
@@ -41,5 +54,6 @@
 
 		</div>
 		<div id="header-line"></div>
+    <script src="../js/articlejs.js"></script>
 	</body>
 </html>

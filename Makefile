@@ -69,6 +69,10 @@ custom.js : $(SRC)/custom.ml
 	@echo "Generate custom.js"
 	@$(ocamljs) -o $(BYTES)/custom.byte $(^)
 	@js_of_ocaml $(BYTES)/custom.byte -o $(JS)/$(@)
+articlejs.js : $(SRC)/articlejs.ml
+	@echo "Generate article.js"
+	@$(ocamljs) -o $(BYTES)/articlejs.byte $(^)
+	@js_of_ocaml $(BYTES)/articlejs.byte -o $(JS)/$(@)
 #================================================
 # Git rules
 #================================================
@@ -139,13 +143,12 @@ clean_bytes :
 
 clean_emacs_files :
 	@echo "Clean all emacs files"
-	@rm -rf *~
-	@rm -rf */*~
-	@rm -rf */*/*~
-	@rm -rf \#*\#
-	@rm -rf */\#*\#
-	@rm -rf */*/\#*\#
-	@git rm -rf *~
+	rm -rf *~	
+	rm -rf */*~
+	rm -rf */*/*~
+	rm -rf \#*\#
+	rm -rf */\#*\#
+	rm -rf */*/\#*\#
 
 clean_css :
 	@echo "Clean postprocessed CSS"

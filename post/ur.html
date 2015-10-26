@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>xvw : Programmation web avec Ur/Web</title>
+		<link href='https://fonts.googleapis.com/css?family=Playfair+Display:400,400italic,700' rel='stylesheet' type='text/css'>
+<link href='https://fonts.googleapis.com/css?family=Droid+Sans:400,700' rel='stylesheet' type='text/css'>
+<link href='../css/app.min.css' rel='stylesheet' type='text/css'>
+
+		<link rel="stylesheet" href="../css/default.css">
+    <meta charset="utf-8">
+    <meta name='keywords' content='web,type,framework,cadriciel,ur,ur\web,haskell'>
+		<script src="../js/highlight.pack.js"></script>
+		<script>hljs.initHighlightingOnLoad();</script>
+  </head>
+  <body>
+    <div id="ui-notif" class="notif">
+      <div>
+      Cet article est ouvert à la modification, correction orthographique
+      [
+      <a href="https://github.com/xvw/xvw.github.io/blob/master/raw/articles/ur.md">
+        Voir sur Github
+      </a>
+      ]
+      </div>
+      <div id="close-alert" class="right-child">
+        x
+      </div>
+    </div>
+		<div id="content">
+			<div id="header">
+				<h1>Programmation web avec Ur/Web</h1>
+				<h2>Développement d'applications web sécurisées et typées</h2>
+			</div>
+			<div class="center headmenu">
+        <a href="../list.html#Encore-une-lecture?" title="Bonne lecture?">Retour à la liste</a>
+				<a href="../index.html#Pourquoi-ne-pas-laisser-un-petit-commentaire?!" title="Il y a des commentaires en bas !!!">Retour à l'accueil</a>
+			</div>
+			<div id="article-content">
+				<blockquote>
+<p>Même si je pratique de moins en moins la programmation web pour autre chose que des expérimentations, je suis toujours ouvert aux nouvelles technologies (même si j'ai beaucoup de mal à suivre les évolutions liées au langage JavaScript). Dans cet article, je vous propose de sommairement découvrir le <a href="http://http://www.impredicative.com/ur/">langage Ur</a> au travers de son cadriciel: <strong>Ur/Web</strong>.<br />Dans cet article, nous observons les motivations d'un tel cadriciel, et nous survolerons un exemple de projet en Ur/Web.</p>
+</blockquote>
+<h3 id="redécouverte-du-web-avec-ocsigen">Redécouverte du web avec Ocsigen</h3>
+<p>Après avoir programmé pendant 10 ans (de mon plein gré) en PHP, en 2009, j'ai décidé de me tourner vers d'autres types de langages et de problématiques.<br />J'avais laissé le Web de côté et c'est récemment, que grâce au cadriciel <a href="http://ocsigen.org">Ocsigen</a> (pour le langage OCaml), j'ai décidé de me réintéresser à ce que se faisait dans les outils de développement web.<br />Ocsigen m'aura fait comprendre les architectures orientées <strong>services</strong>, le fondement d'une application <strong>client-serveur</strong> et les bénéfices de la programmation web statiquement typée.</p>
+<p>Même si Ocsigen est un outil moderne et sécurisé, capable de réaliser très bien des tâches complexes (typage des données, inter-communication entre le client et le serveur, programmation fonctionelle réactive), je l'ai trouvé assez dur à prendre en main. (En effet, le cadrciel ayant subi beaucoup de modifications durant son développement, ses exemples ne sont pas très nombreux).<br />De plus, la construction de requêtes SQL au moyen de <a href="https://github.com/ocsigen/macaque">Macaque</a> était, de mon point de vue, un peu trop verbeux, difficilement lisible et n'offrait pas la possibilité d'écrire des jointures externes. Tout en restant un grand admirateur du projet, je l'ai trouvé un peu trop rugueux pour écrire une application web complète et j'ai délaissé toute la suite pour me focaliser sur <a href="http://ocsigen.org/js_of_ocaml/">Js_of_ocaml</a> (le compilateur OCaml en byte-code JavaScript) pour le client, et utiliser simplement <a href="http://erlang.org">Erlang</a> et <a href="http://yaws.hyber.org">Yaws</a> pour le serveur.</p>
+<p>Même si je suis encore le développement de Ocsigen (et que je compte m'y replonger dans le futur), j'ai voulu chercher des alternatives convaincante. Il y en a plusieurs mais pour ma part, je me suis focalisé sur Ur (pendant une petite poignée d'heure). Cet article n'est cependant pas <em>&quot;Ur pour le développeur Ocsigen&quot;</em>, mais une petite introduction à un outil qui lui ressemble. Aucun pré-requis en Ocsigen n'est donc demandé (et je ne passerai pas mon temps à ajouter &quot;comme Ocsgien&quot; pour les traits lui ressemblant).</p>
+
+			</div>
+			
+			<div class="comment_box">
+				<h2>Commentaires</h2>
+				  <div id="disqus_thread"></div>
+					<script type="text/javascript">
+						/* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+						var disqus_shortname = 'nukifw'; // required: replace example with your forum shortname
+						
+						/* * * DON'T EDIT BELOW THIS LINE * * */
+						(function() {
+            var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+            dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+						})();
+					</script> <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+			</div>
+
+		</div>
+		<div id="header-line"></div>
+    <script src="../js/articlejs.js"></script>
+	</body>
+</html>
