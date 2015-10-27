@@ -105,7 +105,6 @@ body {
 .a_article > p {
 		font-size: 0.8em;
 		padding-left: 2em;
-		font-family: 'Droid Sans', sans-serif;
 }
 
 .enum-links {
@@ -150,7 +149,6 @@ body {
 }
 
 #article-content > blockquote{
-		font-family: 'Droid Sans', sans-serif;
 		margin-top: 50px;
 		margin-bottom: 48px;
 		font-size: 0.8em;
@@ -174,7 +172,6 @@ body {
 
 #article-content li {
 		padding-top: 8px;
-		font-family: 'Playfair Display', serif;
 }
 
 .comment_box {

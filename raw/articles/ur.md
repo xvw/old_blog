@@ -23,6 +23,10 @@ Ocsigen m'aura fait comprendre les architectures orientées **services**,
 le fondement d'une application **client-serveur** et les bénéfices de la
 programmation web statiquement typée.
 
+> Attention, la partie qui suit n'est pas une critique péremptoire, Ocsigen
+> reste un des outil que j'ai préféré utiliser jusqu'à présent pour faire
+> du web et je reste un utilisateur de Js_of_ocaml !
+
 Même si Ocsigen est un outil moderne et sécurisé, capable de réaliser très
 bien des tâches complexes (typage des données, inter-communication entre le
 client et le serveur, programmation fonctionelle réactive), je l'ai trouvé
@@ -40,7 +44,7 @@ byte-code JavaScript) pour le client, et utiliser simplement
 [Erlang](http://erlang.org) et [Yaws](http://yaws.hyber.org) pour le serveur.
 
 Même si je suis encore le développement de Ocsigen (et que je compte m'y
-replonger dans le futur), j'ai voulu chercher des alternatives convaincante. Il
+replonger dans le futur), j'ai voulu chercher des alternatives convaincantes. Il
 y en a plusieurs mais pour ma part, je me suis focalisé sur Ur (pendant une
 petite poignée d'heure). Cet article n'est cependant pas *"Ur pour le
 développeur Ocsigen"*, mais une petite introduction à un outil qui lui
