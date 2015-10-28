@@ -60,7 +60,7 @@
 <tbody>
 <tr class="odd">
 <td align="left">Plus compliqué à heberger</td>
-<td align="left">Extrèmement simple à heberger (surtout depuis les github-pages)</td>
+<td align="left">Extrêmement simple à héberger (surtout depuis les github-pages)</td>
 </tr>
 <tr class="even">
 <td align="left">Interaction possible avec l'utilisateur</td>
@@ -68,7 +68,7 @@
 </tr>
 <tr class="odd">
 <td align="left">Compliqué (et coûteux) de faire des générations overkill (conversion de Markdown, génération de diagrammes, PDF)</td>
-<td align="left">Total liberté de génération</td>
+<td align="left">Totale liberté de génération</td>
 </tr>
 <tr class="even">
 <td align="left">Complexe à sécuriser correctement</td>
@@ -88,7 +88,7 @@
 <div class="figure">
 <img src="../images/static-flow.png" />
 </div>
-<p>Donc plutôt que de laisser au serveur la tâche de générer à la demande toute la hiérarchie logique du site, on crée une version statique d'une collection de fichiers locaux que l'on déploye.<br />Pour ma part, dans ce système de blog (qui devra être revu un jour), j'utilise des données brutes qui configurent (en XML) la description formelle d'une page. Voici par exemple le fichier de description de cet article :</p>
+<p>Donc plutôt que de laisser au serveur la tâche de générer à la demande toute la hiérarchie logique du site, on crée une version statique d'une collection de fichiers locaux que l'on déploie.<br />Pour ma part, dans ce système de blog (qui devra être revu un jour), j'utilise des données brutes qui configurent (en XML) la description formelle d'une page. Voici par exemple le fichier de description de cet article :</p>
 <pre class="sourceCode xml"><code class="sourceCode xml"><span class="er">&lt;</span>title&gt;Les générateurs de sites statiques<span class="er">&lt;</span>/title&gt;
 <span class="er">&lt;</span>subtitle&gt;Présentation et pistes d&#39;implémentation<span class="er">&lt;</span>/subtitle&gt;
 <span class="er">&lt;</span>desc&gt;Présentation sommaire de ce que sont les générateurs de sites statiques,
@@ -101,7 +101,7 @@ jekyll, nanoc<span class="er">&lt;</span>/keywords&gt;
 <p>Au moment où j'écris ces mots, l'article est encore en brouillon, ce qui explique la présence de la balise <code>&lt;draft /&gt;</code>. Cette description référence l'article qui est écrit en Markdown et au moment de la génération, le système compresse le HTML et le CSS, génère les fichiers HTML compressé des articles, génère un PDF pour l'article, construit l'index et le flux RSS et il ne me reste plus qu'a déployer.</p>
 <p>Grâce à cette méthode, pour peu que l'ordinateur possède Git (et... les dépendance que j'ai avec OCaml, Pandoc et LaTeX, que tout développeur DOIT posséder :) ), je peux modifier mon blog de partout, en clonant localement le projet et en ajoutant/modifiant des fichiers.</p>
 <h3 id="quelques-solutions-éprouvées">Quelques solutions éprouvées</h3>
-<p>Les blogs statiques étant de plus en plus populaire, voici une liste non exhaustive des solutions que j'ai pu survoler :</p>
+<p>Les blogs statiques étant de plus en plus populaires, voici une liste non exhaustive des solutions que j'ai pu survoler :</p>
 <ul>
 <li><a href="https://zoggy.github.io/stog/">Stog</a> : un système écrit en OCaml avec une multitude d'outil;</li>
 <li><a href="https://middlemanapp.com/">Middleman</a> : le chouchou des programmeurs ruby que je connais;</li>
@@ -110,54 +110,54 @@ jekyll, nanoc<span class="er">&lt;</span>/keywords&gt;
 <li><a href="http://nanoc.ws/">nanoc</a> : encore une solution ruby;</li>
 <li><a href="http://blog.getpelican.com/">pelican</a> : un générateur en python.</li>
 </ul>
-<p>Il existe évidemment pléthore d'autre solution, et je n'ai pas vraiment l'envie de faire un comparatif de ces solutions (il en existe sûrement déjà énormément sur le net!). Donc si vous ne voulez pas coder votre propre outil (parce que contrairement à moi, vous n'aimez pas réinventer la roue... snif), je vous invite à vous faire votre propre opinion sur la question :)<br /><a href="https://www.staticgen.com/">Ce site</a> liste les générateurs les plus populaires.</p>
+<p>Il existe évidemment pléthore d'autres solutions, et je n'ai pas vraiment l'envie de faire un comparatif de ces solutions (il en existe sûrement déjà énormément sur le net !). Donc si vous ne voulez pas coder votre propre outil (parce que contrairement à moi, vous n'aimez pas réinventer la roue... snif), je vous invite à vous faire votre propre opinion sur la question :)<br /><a href="https://www.staticgen.com/">Ce site</a> liste les générateurs les plus populaires.</p>
 <h2 id="pistes-pour-limplémentation-dun-générateur">Pistes pour l'implémentation d'un générateur</h2>
 <p>Dans cette rubrique, nous allons voir quelques pistes pour implémenter son propre générateur de pages statiques. Sans tomber dans <em>l'over-engineering</em> et sans être hypocrite (en ne proposant rien de généré).<br />Sans proposer une implémentation, je proposerai ce qui selon moi est la structure minimale d'un générateur, et comment éviter certaines problématiques ennuyantes.<br />Bien que la construction d'un générateur puisse sembler assez simple, un lot de problématiques peut rapidement faire intrusion si le système n'a pas été mûrement réfléchit à sa source, de plus, il ne faut pas hésiter à utiliser les nombreux outils mis à disposition. (J'aime réinventer la roue, mais il ne faut pas exagérer !)</p>
 <h3 id="les-ingrédients">Les ingrédients</h3>
-<p>Même si les avis diffère sur ce que doit proposer un générateur de sites statiques, voici de mon point de vue ce qu'il est nécéssaire d'avoir pour offrir un générateur agréable à utiliser:</p>
+<p>Même si les avis diffèrent sur ce que doit proposer un générateur de sites statiques, voici de mon point de vue ce qu'il est nécessaire d'avoir pour offrir un générateur agréable à utiliser :</p>
 <ul>
-<li>Un format de rédaction (personnellement, j'utilise Markdown);</li>
-<li>un convertisseur du format vers du HTML;</li>
-<li>un outil de description minimale;</li>
-<li>un outil pour intégrer les pages générées dans un gabarit;</li>
+<li>Un format de rédaction (personnellement, j'utilise Markdown) ;</li>
+<li>un convertisseur du format vers du HTML ;</li>
+<li>un outil de description minimale ;</li>
+<li>un outil pour intégrer les pages générées dans un gabarit ;</li>
 <li>un générateur de liste de publications (dans le cas d'un blog).</li>
 </ul>
-<p>Dans l'absolu, je ne pense pas qu'il soit nécéssaire d'avoir plus. L'idée générale à cette énumération est de permettre à l'utilisateur du générateur ( en l'occurence... nous), d'écrire un article dans un format de texte qui lui plaît (personnellement, j'ai en horreur le BBcode), de lancer le générateur qui va construire une liste en utilisant la description des articles.</p>
+<p>Dans l'absolu, je ne pense pas qu'il soit nécéssaire d'avoir plus. L'idée générale à cette énumération est de permettre à l'utilisateur du générateur (en l'occurence... nous), d'écrire un article dans un format de texte qui lui plaît (personnellement, j'ai en horreur le BBcode), de lancer le générateur qui va construire une liste en utilisant la description des articles.</p>
 <h3 id="outils">Outils</h3>
 <p>La liste des outils présente, en outre, une ou plusieurs problématiques liées à la construction d'un générateur de sites statiques.</p>
 <h4 id="pandoc-conversion-de-textes">Pandoc: conversion de textes</h4>
 <p><a href="http://pandoc.org/">Pandoc</a> est un convertisseur de textes complètement overkill qui peut convertir <a href="http://pandoc.org/diagram.jpg">énormément de formats en énorméments de formats</a>.<br />Je pense qu'un des points compliqué dans l'écriture d'un générateur de pages statiques est la construction d'un convertisseur de texte (dans mon cas, pour aller de Markdown vers HTML et PDF). Je me sers de Pandoc pour rendre cette tâche aussi simple qu'un simple appel de ligne de commande. L'outil est très riche et bien documenté (et écrit en Haskell). Je le recommande !</p>
-<h4 id="github-déployement-facile">Github: déployement facile</h4>
+<h4 id="github-déploiement-facile">Github: déploiement facile</h4>
 <p>Même s'il est toujours possible de déployer manuellement son site web, c'est assez ennuyeux quand on est actif sur sa page. Une solution (utilisée par <a href="https://github.com/Grimimi">Grim</a>) est l'implémentation d'un client FTP pour automatiser le déployement, cependant, même si l'exercice est intéressant, c'est tout de même beaucoup de travail.<br />Depuis un petit temps, <a href="http://github.com">Github</a> offre un service d'hebergement de pages statiques (sur un projet précis ou sur une branche orpheline). Déployer son application devient donc extrèmement simple, il suffit de faire un <code>git push</code>.</p>
 <h4 id="disqus-les-commentaires">Disqus: les commentaires</h4>
 <p>La teneur statique du site ne permet pas de faire du dynamisme. Pour un blog, le gros point ennuyant est qu'il devient &quot;nativement&quot; impossible d'ajouter un système de commentaires. Il existe beaucoup de services qui permettent d'installer des commentaires sur une page statique au moyen d'une petite ligne JavaScript très courte. Personnellement, j'ai pris l'habitude de me servir de <a href="http://disqus.com">Disqus</a> qui agrège une communauté d'une certaine taille dans le monde des blogs de programmation et qui s'intègre très facilement dans une page (de plus, on ne doit pas se soucier de paramétrer la page, le service s'en charge tout seul).<br />Il suffit donc de prévoir dans son gabarit destiné aux pages commentables, l'intégration de la portion de code nécéssaire à l'embarquement des commentaires.</p>
 <h4 id="tup-calcul-des-dépendances">Tup: calcul des dépendances</h4>
-<p>Un site statique est amené à être regénéré à chaque modification. Le calcul de ce qui est nécéssaire à regénérer est bien plus complexe qu'il n'y parait. En effet, dans la majeure partie des cas, consulter la date de modification du fichier suffit, mais il existe des cas plus fourbes, comme par exemple lorsque le générateur possède un système de tags apparents et qu'un tag est modifie, ce qui implique la modification de toutes les pages référencées par ce tag.<br />Bien que je ne m'en sois jamais servi, il parait que <a href="http://gittup.org/tup/">Tup</a> est un bon outil pour calculer efficacement ces dépendances.</p>
+<p>Un site statique est amené à être régénéré à chaque modification. Le calcul de ce qui est nécessaire à régénérer est bien plus complexe qu'il n'y paraît. En effet, dans la majeure partie des cas, consulter la date de modification du fichier suffit, mais il existe des cas plus fourbes, comme par exemple lorsque le générateur possède un système de tags apparents et qu'un tag est modifié, ce qui implique la modification de toutes les pages référencées par ce tag.<br />Bien que je ne m'en sois jamais servi, il parait que <a href="http://gittup.org/tup/">Tup</a> est un bon outil pour calculer efficacement ces dépendances.</p>
 <h4 id="synthèses-des-outils">Synthèses des outils</h4>
 <p>Pour terminer la liste des outils, voici une micro-synthèse (un peu enrichie) de solutions. Tup ne sera pas reprise car c'est un outil qui répond à un besoin un peu trop spécifique et ne concerne que les systèmes de blogs avancés.</p>
-<p><strong>Hebergement</strong></p>
+<p><strong>Hébergement</strong></p>
 <ul>
-<li><a href="https://pages.github.com/">Github page</a>, ma solution favorite;</li>
-<li><a href="https://dropbox.com">Dropbox</a> (lol);</li>
-<li><a href="https://www.site44.com/">Site44</a>, une solution d'hebergement extra-simple;</li>
+<li><a href="https://pages.github.com/">Github page</a>, ma solution favorite ;</li>
+<li><a href="https://dropbox.com">Dropbox</a> (lol) ;</li>
+<li><a href="https://www.site44.com/">Site44</a>, une solution d'hebergement extra-simple ;</li>
 <li><a href="https://www.kissr.com/">KISSr</a>, une abstraction sur Dropbox.</li>
 </ul>
 <p><strong>Convertisseurs de textes</strong></p>
 <p>Je ne connais que <a href="http://pandoc.org/">Pandoc</a> que je re-recommande !</p>
 <p><strong>Commentaires embarqués</strong></p>
 <ul>
-<li><a href="https://disqus.com/">Disqus</a>, le système que j'utilise;</li>
+<li><a href="https://disqus.com/">Disqus</a>, le système que j'utilise ;</li>
 <li><a href="http://posativ.org/isso/">Isso</a>, un outil libre (similaire à Disqus).</li>
 </ul>
 <p><strong>Analyses</strong></p>
 <ul>
-<li><a href="https://www.google.com/intl/fr_fr/analytics/">Google Analytics</a>, pusique Google sait déjà tout de nous;</li>
+<li><a href="https://www.google.com/intl/fr_fr/analytics/">Google Analytics</a>, pusique Google sait déjà tout de nous ;</li>
 <li><a href="https://fr.piwik.org/">Piwik</a>, une alternative libre !</li>
 </ul>
 <h3 id="le-javascript-à-la-rescousse">Le JavaScript à la rescousse</h3>
-<p>Même si je ne suis pas féru de l'usage absolument immodéré du JavaScript, ce dernier offre tout de même des raccourcis indéniables ! Je pense que généré une partie acceptable de données JSon peut être une solution &quot;simple&quot; pour faciliter l'indexation (et le problèmes des tags). De plus, le Javascript permet facilement de mettre en place de petites choses qui agrémentent la navigation, comme par exemple, la barre de recherche présente sur la liste des publications de mon blog.</p>
+<p>Même si je ne suis pas féru de l'usage absolument immodéré du JavaScript, ce dernier offre tout de même des raccourcis indéniables ! Je pense que générer une partie acceptable de données JSon peut être une solution &quot;simple&quot; pour faciliter l'indexation (et le problème des tags). De plus, le Javascript permet facilement de mettre en place de petites choses qui agrémentent la navigation, comme par exemple, la barre de recherche présente sur la liste des publications de mon blog.</p>
 <h2 id="conclusion">Conclusion</h2>
-<p>J'espère que ce bref article aura motivé certaines personnes intéressée par l'atelier <a href="http://atelier-prog.github.io/topics/blogstatic.html">créer son blog statique</a> et que éventuellement, nous verrons <strong>pleins</strong> de générateurs naîtrent. Et donc en plus, idéalement, pleins de blogs naîtrent. Si par malheur vous ne savez pas sur quoi écrire, vous pourrez toujours rédiger un premier article qui explique comment vous avez réussi à faire votre propre générateur de blogs statiques ! Pour ma part, je pense me relancer dans le développement de <a href="https://github.com/xvw/piplet">piplet</a> lorsque je ne serai plus trop pris par mon travail. Merci de votre lecture !</p>
+<p>J'espère que ce bref article aura motivé certaines personnes intéressées par l'atelier <a href="http://atelier-prog.github.io/topics/blogstatic.html">créer son blog statique</a> et que éventuellement, nous verrons <strong>plein</strong> de générateurs naître. Et donc en plus, idéalement, plein de blogs naître. Si par malheur vous ne savez pas sur quoi écrire, vous pourrez toujours rédiger un premier article qui explique comment vous avez réussi à faire votre propre générateur de blogs statiques ! Pour ma part, je pense me relancer dans le développement de <a href="https://github.com/xvw/piplet">piplet</a> lorsque je ne serai plus trop pris par mon travail. Merci de votre lecture !</p>
 
 			</div>
 			
