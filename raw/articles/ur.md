@@ -18,7 +18,7 @@ Après avoir programmé pendant 10 ans (de mon plein gré) en PHP, en 2009, j'ai
 décidé de me tourner vers d'autres types de langages et de problématiques.\
 J'avais laissé le Web de côté et c'est récemment, que grâce au cadriciel
 [Ocsigen](http://ocsigen.org) (pour le langage OCaml), j'ai décidé de me
-réintéresser à ce que se faisait dans les outils de développement web.\
+réintéresser à ce qui se faisait dans les outils de développement web.\
 Ocsigen m'aura fait comprendre les architectures orientées **services**,
 le fondement d'une application **client-serveur** et les bénéfices de la
 programmation web statiquement typée.
@@ -50,3 +50,5 @@ petite poignée d'heure). Cet article n'est cependant pas *"Ur pour le
 développeur Ocsigen"*, mais une petite introduction à un outil qui lui
 ressemble. Aucun pré-requis en Ocsigen n'est donc demandé (et je ne passerai
 pas mon temps à ajouter "comme Ocsgien" pour les traits lui ressemblant).
+
+## Ur: un langage fonctionnel
