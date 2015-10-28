@@ -47,9 +47,9 @@ bien évidemment leurs domaines d'expertises.
 
 | Dynamiques | Statiques |
 |---|---|
-| Plus compliqué à heberger | Extrèmement simple à heberger (surtout depuis les github-pages)|
+| Plus compliqué à heberger | Extrêmement simple à héberger (surtout depuis les github-pages)|
 | Interaction possible avec l'utilisateur | Obligé de passer par un service tierce pour modeliser les interactions |
-| Compliqué (et coûteux) de faire des générations overkill (conversion de Markdown, génération de diagrammes, PDF) | Total liberté de génération |
+| Compliqué (et coûteux) de faire des générations overkill (conversion de Markdown, génération de diagrammes, PDF) | Totale liberté de génération |
 | Complexe à sécuriser correctement | Que des pages statiques donc aucune faille (en dehors de celles du serveur)  |
 | Dépendance d'un cadriciel web | Liberté du langage |
 
@@ -80,7 +80,7 @@ logiciel (ou une collection de logiciels) qui offre les outils nécéssaire
 
 Donc plutôt que de laisser au serveur la tâche de générer à la demande toute
 la hiérarchie logique du site, on crée une version statique d'une collection
-de fichiers locaux que l'on déploye.\
+de fichiers locaux que l'on déploie.\
 Pour ma part, dans ce système de blog (qui devra être revu un jour), j'utilise
 des données brutes qui configurent (en XML) la description formelle d'une page.
 Voici par exemple le fichier de description de cet article :
@@ -109,7 +109,7 @@ posséder :) ), je peux modifier mon blog de partout, en clonant localement
 le projet et en ajoutant/modifiant des fichiers.
 
 ### Quelques solutions éprouvées
-Les blogs statiques étant de plus en plus populaire, voici une liste non
+Les blogs statiques étant de plus en plus populaires, voici une liste non
 exhaustive des solutions que j'ai pu survoler :
 
 *   [Stog](https://zoggy.github.io/stog/) : un système écrit en OCaml avec une multitude d'outil;
@@ -119,9 +119,9 @@ exhaustive des solutions que j'ai pu survoler :
 *   [nanoc](http://nanoc.ws/) : encore une solution ruby;
 *   [pelican](http://blog.getpelican.com/) : un générateur en python.
 
-Il existe évidemment pléthore d'autre solution, et je n'ai pas vraiment l'envie
+Il existe évidemment pléthore d'autres solutions, et je n'ai pas vraiment l'envie
 de faire un comparatif de ces solutions (il en existe sûrement déjà énormément
-sur le net!). Donc si vous ne voulez pas coder votre propre outil (parce que
+sur le net !). Donc si vous ne voulez pas coder votre propre outil (parce que
 contrairement à moi, vous n'aimez pas réinventer la roue... snif), je vous
 invite à vous faire votre propre opinion sur la question :)\
 [Ce site](https://www.staticgen.com/) liste les générateurs les plus populaires.
