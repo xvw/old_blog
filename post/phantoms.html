@@ -51,7 +51,7 @@
 <li><code>km_to_cm</code></li>
 </ul>
 <p>Naïvement, lorsque j'ai été amené à lire le problème de typage soulevé par la sonde <em>Mars Climate Orbiter</em>, et de manière plus générale à la représentation d'unités de mesure, j'ai pensé à la définition d'une disjonction séparant les kilomètres des centimètres. Avec, par exemple, ceci comme implémentation :</p>
-<pre class="sourceCode ocaml"><code class="sourceCode ocaml"><span class="kw">exception</span> <span class="dt">IllegalMeasureData</span>
+<div class="sourceCode"><pre class="sourceCode ocaml"><code class="sourceCode ocaml"><span class="kw">exception</span> <span class="dt">IllegalMeasureData</span>
 <span class="kw">type</span> measure = 
 | <span class="dt">Cm</span> <span class="kw">of</span> float 
 | <span class="dt">Km</span> <span class="kw">of</span> float 
@@ -65,27 +65,27 @@
 
 <span class="kw">let</span> km_to_cm = <span class="kw">function</span> 
   | <span class="dt">Km</span> x -&gt; <span class="dt">Cm</span> (x /. <span class="fl">100000.0</span>)
-  | _ -&gt; raise <span class="dt">IllegalMeasureData</span></code></pre>
+  | _ -&gt; raise <span class="dt">IllegalMeasureData</span></code></pre></div>
 <p>Cette manière de procéder semble correcte, et si je tente une conversion sur une valeur invalide, par exemple <code>let test = km_to_cm (cm 10.0)</code>, mon code renverra une erreur <code>IllegalMeasureData</code>, et ce à la compilation. Cependant, si l'erreur se déclenche, c'est uniquement parce que la variable <em>test</em> évalue directement l'expression <code>km_to_cm (cm 10.0)</code>. Voyons ce qu'il se passe si nous essayons de compiler notre code avec cette déclaration : <code>let test () = km_to_cm (cm 10.0)</code>. Cette fois-ci, la compilation fonctionne.</p>
 <p>Cela prouve que les erreurs ne sont pas vérifiées à la compilation. Car les fonctions <code>km_to_cm</code> et <code>cm_to_km</code> ont le type <code>measure -&gt; measure</code>. Et donc une incohérence telle que passer une valeur en kilomètres à la fonction <code>cm_to_km</code> ne peut être détectée réellement à la compilation.</p>
 <h2 id="implémentation-des-types-fantômes">Implémentation des types fantômes</h2>
 <p>Nous avons vu que les variants classiques ne permettent pas assez de vérification pour distinguer des données au sein d'un même type à la compilation (car oui, il serait possible de distinguer chaque unité de mesure dans des types différents, de cette manière :</p>
-<pre class="sourceCode ocaml"><code class="sourceCode ocaml"><span class="ot">module</span> Measure =
+<div class="sourceCode"><pre class="sourceCode ocaml"><code class="sourceCode ocaml"><span class="ot">module</span> Measure =
 <span class="kw">struct</span>
   <span class="kw">type</span> km = <span class="dt">Km</span> <span class="kw">of</span> float
   <span class="kw">type</span> cm = <span class="dt">Cm</span> <span class="kw">of</span> float
-<span class="kw">end</span></code></pre>
+<span class="kw">end</span></code></pre></div>
 <p>Cependant ce n'est absolument pas confortable et ce n'est pas réellement l'intérêt de cet article). Donc avant de définir et de proposer une implémentation, nous allons devoir (re)voir quelques outils en relation avec le langage OCaml.</p>
 <h3 id="les-variants-polymorphiques">Les variants polymorphiques</h3>
 <p>Bien que très utiles dans le <em>design</em> d'application, les variants possèdent des limitations. Par exemple, le fait qu'un type Somme ne puisse être enrichi de constructeurs (ce qui n'est plus tout-à-fait vrai depuis <em>OCaml 4.02.0</em>), mais aussi le fait qu'un constructeur ne puisse appartenir qu'à un seul type. Les variants polymorphes s'extraient de ces deux contraintes et peuvent même être déclarés à la volée, sans appartenir à un type prédéfini. La définition d'un constructeur polymorphe est identique à celle d'un constructeur normal (il commence par une majuscule) mais est précédée du caractère <em>`</em>.</p>
-<pre class="sourceCode ocaml"><code class="sourceCode ocaml"># <span class="kw">let</span> a = <span class="dt">`Truc</span> <span class="dv">9</span>;;
+<div class="sourceCode"><pre class="sourceCode ocaml"><code class="sourceCode ocaml"># <span class="kw">let</span> a = <span class="dt">`Truc</span> <span class="dv">9</span>;;
 <span class="kw">val</span> a : [&gt; <span class="dt">`Truc</span> <span class="kw">of</span> <span class="dt">int</span> ] = <span class="dt">`Truc</span> <span class="dv">9</span>
 # <span class="kw">let</span> b = <span class="dt">`Truc</span> <span class="st">&quot;test&quot;</span>;;
-<span class="kw">val</span> b : [&gt; <span class="dt">`Truc</span> <span class="kw">of</span> <span class="dt">string</span> ] = <span class="dt">`Truc</span> <span class="st">&quot;test&quot;</span></code></pre>
+<span class="kw">val</span> b : [&gt; <span class="dt">`Truc</span> <span class="kw">of</span> <span class="dt">string</span> ] = <span class="dt">`Truc</span> <span class="st">&quot;test&quot;</span></code></pre></div>
 <p>Comme vous pouvez le voir, je me suis servi deux fois du constructeur <em>`Truc</em> en lui donnant des arguments à types différents et sans l'avoir déclaré.</p>
 <h4 id="borne-supérieure-et-inférieure">Borne supérieure et inférieure</h4>
 <p>L'usage des variants polymorphes introduit une notation de retour différente de celle des variants normaux. Par exemple :</p>
-<pre class="sourceCode ocaml"><code class="sourceCode ocaml"><span class="kw">let</span> to_int = <span class="kw">function</span> 
+<div class="sourceCode"><pre class="sourceCode ocaml"><code class="sourceCode ocaml"><span class="kw">let</span> to_int = <span class="kw">function</span> 
   | <span class="dt">`Integer</span> x -&gt; x 
   | <span class="dt">`Float</span> x -&gt; int_of_float x;;
 
@@ -95,7 +95,7 @@
   | _ -&gt; <span class="dv">0</span>
 
 # <span class="kw">val</span> to_int : [&lt; <span class="dt">`Float</span> <span class="kw">of</span> float | <span class="dt">`Integer</span> <span class="kw">of</span> <span class="dt">int</span> ] -&gt; <span class="dt">int</span> = &lt;<span class="kw">fun</span>&gt;
-# <span class="kw">val</span> to_int&#39; :[&gt; <span class="dt">`Float</span> <span class="kw">of</span> float | <span class="dt">`Integer</span> <span class="kw">of</span> <span class="dt">int</span> ] -&gt; <span class="dt">int</span> = &lt;<span class="kw">fun</span>&gt;</code></pre>
+# <span class="kw">val</span> to_int&#39; :[&gt; <span class="dt">`Float</span> <span class="kw">of</span> float | <span class="dt">`Integer</span> <span class="kw">of</span> <span class="dt">int</span> ] -&gt; <span class="dt">int</span> = &lt;<span class="kw">fun</span>&gt;</code></pre></div>
 <p>Ce que l'on remarque c'est que le chevron varie. Dans le cas où la fonction n'évalue <em>que</em> les constructeurs <em>Integer</em> et <em>Float</em>, le chevron est <code>&lt;</code>. Si la fonction peut potentiellement évaluer autre chose, le chevron est <code>&gt;</code>.</p>
 <ul>
 <li><code>[&lt; K]</code> indique que le type ne peut contenir que K</li>
@@ -104,18 +104,18 @@
 <p>Nous verrons que cette restriction sur les entrées permettra d'affiner le typage de fonctions.</p>
 <h4 id="restriction-sur-les-variants-polymorphes">Restriction sur les variants polymorphes</h4>
 <p>Les variants polymorphes ne permettent tout de même pas de faire des choses comme :</p>
-<pre class="sourceCode ocaml"><code class="sourceCode ocaml"><span class="kw">let</span> truc = <span class="kw">function</span>
+<div class="sourceCode"><pre class="sourceCode ocaml"><code class="sourceCode ocaml"><span class="kw">let</span> truc = <span class="kw">function</span>
   | <span class="dt">`A</span> -&gt; <span class="dv">0</span>
-  | <span class="dt">`A</span> x -&gt; x </code></pre>
+  | <span class="dt">`A</span> x -&gt; x </code></pre></div>
 <p>Au sein d'une <em>même</em> fonction, on ne peut pas utiliser un <em>même</em> variant avec des arguments différents. De mon point de vue, c'est plus logique que limitant. Mais rien n'empêche de faire deux fonctions qui, elles, utilisent des variants polymorphes à arguments variables.</p>
 <h4 id="nommer-les-variants-polymorphes">Nommer les variants polymorphes</h4>
 <p>Bien que l'on puisse les nommer à l'usage, il peut parfois être confortable de spécifier des variants polymorphes dans un type nommé (ne serait-ce que pour le confort de la réutilisation). Leur syntaxe (que nous verrons un peu plus bas) est assez proche des déclarations de variants classiques, cependant, <strong>on ne peut pas</strong> spécifier la borne dans la définition de type de variants polymorphes. Ce qui est parfaitement logique car un type ouvert (donc borné) ne correspond pas à un seul type mais à une collection de types.</p>
 <p>A la différence des variants normaux, les variants polymorphes se déclarent dans une liste dont les différentes énumérations sont séparées par un pipe. Par exemple :</p>
-<pre class="sourceCode ocaml"><code class="sourceCode ocaml"><span class="kw">type</span> poly_color = [<span class="dt">`Red</span> <span class="kw">of</span> <span class="dt">int</span> | <span class="dt">`Green</span> <span class="kw">of</span> <span class="dt">int</span> | <span class="dt">`Blue</span> <span class="kw">of</span> <span class="dt">int</span>]</code></pre>
+<div class="sourceCode"><pre class="sourceCode ocaml"><code class="sourceCode ocaml"><span class="kw">type</span> poly_color = [<span class="dt">`Red</span> <span class="kw">of</span> <span class="dt">int</span> | <span class="dt">`Green</span> <span class="kw">of</span> <span class="dt">int</span> | <span class="dt">`Blue</span> <span class="kw">of</span> <span class="dt">int</span>]</code></pre></div>
 <p>Il est évidemment possible d'utiliser les variants polymorphes dans la déclaration de variants normaux, par exemple :</p>
-<pre class="sourceCode ocaml"><code class="sourceCode ocaml"><span class="kw">type</span> color_list =
+<div class="sourceCode"><pre class="sourceCode ocaml"><code class="sourceCode ocaml"><span class="kw">type</span> color_list =
 | <span class="dt">Empty</span>
-| <span class="dt">Cons</span> <span class="kw">of</span> ( [<span class="dt">`Red</span> <span class="kw">of</span> <span class="dt">int</span> | <span class="dt">`Green</span> <span class="kw">of</span> <span class="dt">int</span> | <span class="dt">`Blue</span> <span class="kw">of</span> <span class="dt">int</span>]  *  color_list)</code></pre>
+| <span class="dt">Cons</span> <span class="kw">of</span> ( [<span class="dt">`Red</span> <span class="kw">of</span> <span class="dt">int</span> | <span class="dt">`Green</span> <span class="kw">of</span> <span class="dt">int</span> | <span class="dt">`Blue</span> <span class="kw">of</span> <span class="dt">int</span>]  *  color_list)</code></pre></div>
 <p>Par contre, même si dans les définitions de types on ne peut pas spécifier de borne, on peut le faire dans les contraintes de types des fonctions. Et c'est grâce à cette autorisation que nous utiliserons les types fantômes avec des variants polymorphes.</p>
 <h4 id="conclusion-sur-les-variants-polymorphes">Conclusion sur les variants polymorphes</h4>
 <p>Les variants polymorphes permettent plus de flexibilité que les variants classiques. Cependant, ils ont aussi leurs petits soucis :</p>
@@ -135,7 +135,7 @@
 <h2 id="distinguer-des-unités-de-mesure">Distinguer des unités de mesure</h2>
 <p>Si cet article a été introduit via une erreur dûe à des unités de mesure, ce n'est pas tout à fait innocent. Nous avions vu que via des variants classiques, il n'était a priori pas possible (en gardant un confort d'utilisation) de distinguer à la compilation des unités de mesures. Nous allons voir qu'au moyen des types fantômes, c'est très simple.</p>
 <p>Par souci de lisibilité, j'utiliserai des sous-modules. Cependant, ce n'est absolument pas obligatoire.</p>
-<pre class="sourceCode ocaml"><code class="sourceCode ocaml"><span class="ot">module</span> Measure :
+<div class="sourceCode"><pre class="sourceCode ocaml"><code class="sourceCode ocaml"><span class="ot">module</span> Measure :
 <span class="kw">sig</span> 
   <span class="kw">type</span> &#39;a t
   <span class="kw">val</span> km : float -&gt; [<span class="dt">`Km</span>] t 
@@ -144,9 +144,9 @@
   <span class="kw">type</span> &#39;a t = float
   <span class="kw">let</span> km f = f
   <span class="kw">let</span> cm f = f
-<span class="kw">end</span></code></pre>
+<span class="kw">end</span></code></pre></div>
 <p>Ce module produit offre des fonctions qui produisent des valeurs de type <code>Measure.t</code>, mais ces données sont décorées. Les kilomètres et les centimètres ont donc une différence structurelle. Imaginons que nous enrichissions notre module d'une fonction addition, dont le prototype serait : <code>'a t -&gt; 'a t -&gt; 'a t</code>, et le code ne serait qu'un appel de <code>(+.)</code> (l'addition flottante) :</p>
-<pre class="sourceCode ocaml"><code class="sourceCode ocaml"><span class="ot">module</span> Measure :
+<div class="sourceCode"><pre class="sourceCode ocaml"><code class="sourceCode ocaml"><span class="ot">module</span> Measure :
 <span class="kw">sig</span> 
   <span class="kw">type</span> &#39;a t
   <span class="kw">val</span> km : float -&gt; [<span class="dt">`Km</span>] t 
@@ -157,10 +157,10 @@
   <span class="kw">let</span> km f = f
   <span class="kw">let</span> cm f = f
   <span class="kw">let</span> ( + ) =  ( +. )
-<span class="kw">end</span></code></pre>
+<span class="kw">end</span></code></pre></div>
 <p>Que se passe t-il si je fais l'addition de centimètres et de kilomètres (créés au moyen des fonctions <code>km</code> et <code>cm</code>) ? Le code plantera à la compilation car il est indiqué dans le prototype de la fonction que le paramètre du type t (<code>'a</code>) doit impérativement être le même pour les deux membres de l'addition. Nous avons donc une distinction, au niveau du typeur, des unités de mesure, pourtant représentées via des entiers.</p>
 <p>Retournons à notre exemple de conversion, cette fois enrichissons notre module des fonctions de conversion :</p>
-<pre class="sourceCode ocaml"><code class="sourceCode ocaml"><span class="ot">module</span> Measure :
+<div class="sourceCode"><pre class="sourceCode ocaml"><code class="sourceCode ocaml"><span class="ot">module</span> Measure :
 <span class="kw">sig</span> 
   <span class="kw">type</span> &#39;a t
   <span class="kw">val</span> km : float -&gt; [<span class="dt">`Km</span>] t 
@@ -175,7 +175,7 @@
   <span class="kw">let</span> ( + ) = ( +. )
   <span class="kw">let</span> km_of_cm f = f /. <span class="fl">10000.0</span>
   <span class="kw">let</span> cm_of_km f = f *. <span class="fl">10000.0</span>
-<span class="kw">end</span></code></pre>
+<span class="kw">end</span></code></pre></div>
 <p>Cette fois-ci, le typeur refusera formellement des conversions improbables. Dans cet exemple, j'aurais pu utiliser autre chose que des variants polymorphes pour distinguer mes centimètres de mes kilomètres. Cependant, nous allons voir qu'il est possible de se servir des bornes pour affiner le typeur. Et le fait de ne pas devoir les déclarer les rend agréable à utiliser.</p>
 <h2 id="du-html-valide">Du HTML valide</h2>
 <p>Dans plusieurs frameworks de développement web, il arrive que l'on se serve de la syntaxe des fonctions du langage pour l'écriture de HTML. C'est le cas, par exemple de <a href="http://yaws.hyber.org">Yaws</a>, un serveur web pour créer des applications web en Erlang, qui se sert des tuples et des atomes de erlang pour représenter du HTML. De même que <a href="http://www.ocsigen.org">Ocsigen</a>, le framework de développement web OCaml, qui propose, entre autres, une écriture fonctionnelle. Il existe plusieurs intérêts à cet usage, le premier étant le plus évident : c'est généralement beaucoup plus rapide à écrire !</p>
@@ -191,8 +191,8 @@
 <li>Le type du paramètre va dans le sens inverse, on dit qu'il est <strong>contravariant</strong> (et noté -).</li>
 </ul>
 <p>Le compilateur de OCaml peut déterminer si un type est un sous-type d'un autre pour les types qu'il connaît. Il est donc impossible qu'il déduise le sous-typage des types abstraits. Pour permettre au compilateur de faire la relation de sous-typage, on annotera un type abstrait d'un + s'il est covariant et d'un - s'il est contravariant :</p>
-<pre class="sourceCode ocaml"><code class="sourceCode ocaml"><span class="kw">type</span> (+&#39;a) t <span class="co">(* Type covariant *)</span>
-<span class="kw">type</span> (-&#39;a) t <span class="co">(* Type contravariant *)</span></code></pre>
+<div class="sourceCode"><pre class="sourceCode ocaml"><code class="sourceCode ocaml"><span class="kw">type</span> (+&#39;a) t <span class="co">(* Type covariant *)</span>
+<span class="kw">type</span> (-&#39;a) t <span class="co">(* Type contravariant *)</span></code></pre></div>
 <p>Cette précision est importante car nous nous servirons de la covariance et de la contravariance pour produire des documents HTML statiquement typés.</p>
 <h3 id="organisation-par-les-types">Organisation par les types</h3>
 <p>Pour produire un document HTML, il faut d'abord isoler les constituants d'un document HTML. Pour ma part, j'ai décidé de fragmenter les balises en trois catégories :</p>
@@ -203,7 +203,7 @@
 </ul>
 <p>Ces balises seront elles-mêmes divisées en plusieurs sous-catégories, par exemple les balises dites <em>inline</em> (comme <code>&lt;span&gt;</code>), qui ne peuvent pas contenir de balises dites <em>block</em> (comme <code>&lt;div&gt;</code> par exemple).</p>
 <p>Je suggère cette implémentation :</p>
-<pre class="sourceCode ocaml"><code class="sourceCode ocaml"><span class="ot">module</span> HTML : 
+<div class="sourceCode"><pre class="sourceCode ocaml"><code class="sourceCode ocaml"><span class="ot">module</span> HTML : 
 <span class="kw">sig</span> 
   <span class="kw">type</span> (+&#39;a) tag
 <span class="kw">end</span> = <span class="kw">struct</span>
@@ -212,25 +212,26 @@
     | <span class="dt">Leaf</span> <span class="kw">of</span> <span class="dt">string</span> 
     | <span class="dt">Node</span> <span class="kw">of</span> <span class="dt">string</span> * raw_tag <span class="dt">list</span> 
   <span class="kw">type</span> &#39;a tag = raw_tag
-<span class="kw">end</span></code></pre>
-<p>Le fait que les feuilles et les noeuds prennent des chaînes de caractères dans leur signature permettra de parser une arborescence HTML typée et d'en produire le HTML textuel correspondant.<br />Nous pouvons nous atteler à la construction de balises, au moyen de fonctions.</p>
+<span class="kw">end</span></code></pre></div>
+<p>Le fait que les feuilles et les noeuds prennent des chaînes de caractères dans leur signature permettra de parser une arborescence HTML typée et d'en produire le HTML textuel correspondant.<br />
+Nous pouvons nous atteler à la construction de balises, au moyen de fonctions.</p>
 <h3 id="construction-de-balises">Construction de balises</h3>
 <p>Les balises sont assez simples à construire. Commençons par la balise <code>Pcdata</code>, dont la principale contrainte est de ne pouvoir prendre qu'une chaîne de caractères :</p>
-<pre class="sourceCode ocaml"><code class="sourceCode ocaml"><span class="kw">val</span> pcdata : <span class="dt">string</span> -&gt; [<span class="dt">`Pcdata</span>] tag
-<span class="kw">let</span> pcdata x = <span class="dt">Pcdata</span> x</code></pre>
+<div class="sourceCode"><pre class="sourceCode ocaml"><code class="sourceCode ocaml"><span class="kw">val</span> pcdata : <span class="dt">string</span> -&gt; [<span class="dt">`Pcdata</span>] tag
+<span class="kw">let</span> pcdata x = <span class="dt">Pcdata</span> x</code></pre></div>
 <p>L'implémentation de <code>&lt;hr /&gt;</code> et <code>&lt;br /&gt;</code> est assez évidente, et ne demande pas de précisions :</p>
-<pre class="sourceCode ocaml"><code class="sourceCode ocaml"><span class="kw">val</span> hr : [<span class="dt">`Hr</span>] tag
+<div class="sourceCode"><pre class="sourceCode ocaml"><code class="sourceCode ocaml"><span class="kw">val</span> hr : [<span class="dt">`Hr</span>] tag
 <span class="kw">val</span> br : [<span class="dt">`Br</span>] tag
 <span class="kw">let</span> hr = <span class="dt">Leaf</span> <span class="st">&quot;hr&quot;</span>
-<span class="kw">let</span> br = <span class="dt">Leaf</span> <span class="st">&quot;br&quot;</span></code></pre>
+<span class="kw">let</span> br = <span class="dt">Leaf</span> <span class="st">&quot;br&quot;</span></code></pre></div>
 <p>Passons maintenant aux implémentations les plus intéressantes. Une <code>&lt;div&gt;</code> peut a priori prendre n'importe quel type de balise (ce n'est pas tout-à-fait vrai, mais nous partirons de ce principe pour l'exemple), son implémentation est donc elle aussi assez facile :</p>
-<pre class="sourceCode ocaml"><code class="sourceCode ocaml"><span class="kw">val</span> div : &#39;a tag <span class="dt">list</span> -&gt; [<span class="dt">`Div</span>] tag
-<span class="kw">let</span> div children = <span class="dt">Node</span> (<span class="st">&quot;div&quot;</span>, children)</code></pre>
+<div class="sourceCode"><pre class="sourceCode ocaml"><code class="sourceCode ocaml"><span class="kw">val</span> div : &#39;a tag <span class="dt">list</span> -&gt; [<span class="dt">`Div</span>] tag
+<span class="kw">let</span> div children = <span class="dt">Node</span> (<span class="st">&quot;div&quot;</span>, children)</code></pre></div>
 <p>Les <code>&lt;span&gt;</code> sont un peu différents car ces derniers ne peuvent contenir <strong>que</strong> des <code>&lt;span&gt;</code> ou des <code>Pcdata</code>. Il faut donc restreindre leur domaine d'entrée :</p>
-<pre class="sourceCode ocaml"><code class="sourceCode ocaml"><span class="kw">val</span> span : [&lt; <span class="dt">`Span</span> | <span class="dt">`Pcdata</span> ] tag <span class="dt">list</span> -&gt; [<span class="dt">`Span</span>] tag
-<span class="kw">let</span> span children = <span class="dt">Node</span> (<span class="st">&quot;span&quot;</span>, children)</code></pre>
+<div class="sourceCode"><pre class="sourceCode ocaml"><code class="sourceCode ocaml"><span class="kw">val</span> span : [&lt; <span class="dt">`Span</span> | <span class="dt">`Pcdata</span> ] tag <span class="dt">list</span> -&gt; [<span class="dt">`Span</span>] tag
+<span class="kw">let</span> span children = <span class="dt">Node</span> (<span class="st">&quot;span&quot;</span>, children)</code></pre></div>
 <p>Cette fois, la décoration du type <code>tag</code> restreint les entrées à seulement des données <code>&lt;span&gt;</code> ou des <code>Pcdata</code>. (Oui, la borne est supérieure, donc on limite l'entrée à ces deux types uniquement). Pour rappel, le code général du module est :</p>
-<pre class="sourceCode ocaml"><code class="sourceCode ocaml"><span class="ot">module</span> HTML : 
+<div class="sourceCode"><pre class="sourceCode ocaml"><code class="sourceCode ocaml"><span class="ot">module</span> HTML : 
 <span class="kw">sig</span> 
   <span class="kw">type</span> (+&#39;a) tag
   <span class="kw">val</span> pcdata : <span class="dt">string</span> -&gt; [<span class="dt">`Pcdata</span>] tag
@@ -249,15 +250,15 @@
   <span class="kw">let</span> br = <span class="dt">Leaf</span> <span class="st">&quot;br&quot;</span>
   <span class="kw">let</span> div children = <span class="dt">Node</span> (<span class="st">&quot;div&quot;</span>, children)
   <span class="kw">let</span> span children = <span class="dt">Node</span> (<span class="st">&quot;span&quot;</span>, children) 
-<span class="kw">end</span></code></pre>
+<span class="kw">end</span></code></pre></div>
 <p>Je vous invite maintenant à saisir quelques expressions pour tester notre code, par exemple : <code>HTML.(span [br])</code> qui devrait échouer, ou encore <code>HTML.(span [pcdata &quot;hello&quot;])</code>, qui devrait réussir. Un autre exemple un peu plus long :</p>
-<pre class="sourceCode ocaml"><code class="sourceCode ocaml"><span class="kw">let</span> <span class="ot">open</span> HTML <span class="kw">in</span>
+<div class="sourceCode"><pre class="sourceCode ocaml"><code class="sourceCode ocaml"><span class="kw">let</span> <span class="ot">open</span> HTML <span class="kw">in</span>
   div [
     span [pcdata <span class="st">&quot;Hello world&quot;</span>];
     hr;
     span [pcdata <span class="st">&quot;Hello Nuki&quot;</span>];
     br;
-  ]</code></pre>
+  ]</code></pre></div>
 <p>Ce code est parfaitement valide et ne provoque donc aucune erreur. Par contre, si le dernier <code>&lt;span&gt;</code> avait été : <code>span [div [pcdata &quot;Hello Nuki&quot;]]</code>, une erreur aurait été levée.</p>
 <h3 id="retour-dexpérience-sur-la-production-de-html-valide">Retour d'expérience sur la production de HTML valide</h3>
 <p>L'exercice est intéressant et permet de comprendre le rôle des variants polymorphes dans la décoration de types, via les types fantômes. C'est une méthode de ce genre (pas identique ceci dit, sans aucun doute plus riche) qui est utilisée dans <a href="http://ocsigen.org/tyxml/">TyXML</a>, un des composants de <a href="http://ocsigen.org">Ocsigen</a> pour rendre la production de XML invalide absolument impossible (il peut s'utiliser au moyen d'une extension de syntaxe).</p>

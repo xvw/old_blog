@@ -44,54 +44,54 @@
 </blockquote>
 <h2 id="avant-propos">Avant-propos</h2>
 <p>Lors de mes contributions (bien maigre) à <a href="https://github.com/ocaml-batteries-team/batteries-included">Batteries</a>, mon apport principal aura été de tester (principalement des fonctions du modules <code>Substring</code>). Les tests s'effectuaient au moyen de <strong>QuickTest</strong>. Ils apportaient bien du confort, notamment le fait que les tests soient rédigés directement dans le fichier. De cette manière :</p>
-<pre class="sourceCode ocaml"><code class="sourceCode ocaml"><span class="co">(*$T foo</span>
+<div class="sourceCode"><pre class="sourceCode ocaml"><code class="sourceCode ocaml"><span class="co">(*$T foo</span>
 <span class="co">foo  0 ( + ) [1;2;3] = 6</span>
 <span class="co">foo  0 ( * ) [1;2;3] = 0</span>
 <span class="co">foo  1 ( * ) [4;5]   = 20</span>
 <span class="co">foo 12 ( + ) []      = 12</span>
-<span class="co">*)</span></code></pre>
+<span class="co">*)</span></code></pre></div>
 <p>Le principal avantage (de mon point de vue) est que les tests sont concis et que l'on peut vérifier facilement l'exhaustivité des tests. Cependant, pour la construction de tests multi-lignes, il faut impérativement terminer les lignes par un backslash et les commentaires ne préservent pas la colorisation syntaxique de notre editeur.</p>
 <p>Depuis OCaml 4.02, il existe un préprocesseur &quot;local&quot;, n'étant pas un constituant de CamlP4. Il propose deux type d'extensions. Les point d'extensions, qui génèrent une erreur s'ils ne sont pas évalués et les attributs, qui sont ignorés s'ils ne sont pas évalués.</p>
 <p>L'idée général de <code>ppx_test</code> est d'utiliser les attributs pour proposer un environnement réfutable de tests. Soit, lors d'une compilation sans l'utilisation du préprocesseur <code>ppx_test</code>, les tests sont ignorés, et l'utilisation du préprocesseur <code>ppx_test</code>, produit un exécutable ayant rendu les tests efficient.</p>
 <h2 id="code-exécuté-dans-le-contexte-des-tests">Code exécuté dans le contexte des tests</h2>
 <p>Le préprocesseur propose l'évaluation de deux annotations. La première: <code>@@@test_process</code> rend le code qu'elle embarque exécuté dans l'exécutable produit avec avec les tests. Par exemple, le code :</p>
-<pre class="sourceCode ocaml"><code class="sourceCode ocaml">[@@@test_process
+<div class="sourceCode"><pre class="sourceCode ocaml"><code class="sourceCode ocaml">[@@@test_process
   <span class="kw">let</span> x = <span class="dv">9</span> <span class="kw">in</span>
     <span class="kw">assert</span>(x = <span class="dv">9</span>)
-]</code></pre>
+]</code></pre></div>
 <p>Produira, à la compilation avec le préprocesseur, le code suivant :</p>
-<pre class="sourceCode ocaml"><code class="sourceCode ocaml"><span class="kw">let</span> _ =
+<div class="sourceCode"><pre class="sourceCode ocaml"><code class="sourceCode ocaml"><span class="kw">let</span> _ =
   <span class="kw">let</span> x = <span class="dv">9</span> <span class="kw">in</span>
-    <span class="kw">assert</span>(x = <span class="dv">0</span>)</code></pre>
+    <span class="kw">assert</span>(x = <span class="dv">0</span>)</code></pre></div>
 <p>En général, cette annotation sert à ouvrir, uniquement dans le contexte de tests, des modules destiné aux tests, ou alors d'exécuter une routine d'exécution des tests enregistrés, que nous verrons à la section suivante.</p>
 <blockquote>
 <p>Il est évidemment possible de mettre autant d'annotation de procédure de tests que l'on désire !</p>
 </blockquote>
 <h2 id="enregistrement-de-tests">Enregistrement de tests</h2>
 <p>Il existe une autre annotation qui sauvegarde un tests comme une fonction de type <code>unit -&gt; unit</code> dans la liste des tests créés. Cette liste est accessible au moyen de a fonction <code>registered_tests</code> dont le type est <code>unit -&gt; (string * (unit -&gt; unit)) list</code>. Cette fonction est construite par le préprocesseur. La chaine de caractère correspond à l'identifiant choisi pour le test et la fonction <code>unit -&gt; unit</code> a la fonction de test. Par exemple :</p>
-<pre class="sourceCode ocaml"><code class="sourceCode ocaml">[@@@test_register <span class="st">&quot;un_test&quot;</span>,
+<div class="sourceCode"><pre class="sourceCode ocaml"><code class="sourceCode ocaml">[@@@test_register <span class="st">&quot;un_test&quot;</span>,
    <span class="kw">let</span> x = <span class="dv">9</span> <span class="kw">in</span> <span class="kw">assert</span>(x = <span class="dv">9</span>)
 ]
 <span class="co">(* et en plus *)</span>
 [@@@test_register <span class="st">&quot;un_autre_test&quot;</span>,
-   <span class="kw">let</span> x = 10 <span class="kw">in</span> <span class="kw">assert</span>(x = 11) <span class="co">(* Ce test échouera *)</span>
-]</code></pre>
+   <span class="kw">let</span> x = <span class="dv">10</span> <span class="kw">in</span> <span class="kw">assert</span>(x = <span class="dv">11</span>) <span class="co">(* Ce test échouera *)</span>
+]</code></pre></div>
 <p>Ces deux tests seront sauvegardés dans la liste des tests enregistrés (<code>registered_tests ()</code>). Il est évidemment possible, comme pour les annotations de procédure, de définir autant d'annotation d'enregistrement de tests que l'on désire.</p>
 <h3 id="exécution-des-tests-enregistrés">Exécution des tests enregistrés</h3>
 <p>Le préprocesseur génère, en plus, une fonction qui exécute la liste de tests. (Bien qu'elle soit très facile à coder, un simple <code>List.map</code> suffit). Par exemple :</p>
-<pre class="sourceCode ocaml"><code class="sourceCode ocaml"><span class="kw">let</span> du_code_ocaml_normal = <span class="dv">10</span>
+<div class="sourceCode"><pre class="sourceCode ocaml"><code class="sourceCode ocaml"><span class="kw">let</span> du_code_ocaml_normal = <span class="dv">10</span>
 [@@@test_register <span class="st">&quot;un_test&quot;</span>,
    <span class="kw">let</span> x = <span class="dv">9</span> <span class="kw">in</span> <span class="kw">assert</span>(x = <span class="dv">9</span>)
 ]
 <span class="kw">let</span> encore_du_code_ocaml_normal = <span class="dv">11</span>
 <span class="co">(* et en plus *)</span>
 [@@@test_register <span class="st">&quot;un_autre_test&quot;</span>,
-   <span class="kw">let</span> x = 10 <span class="kw">in</span> <span class="kw">assert</span>(x = 11) <span class="co">(* Ce test échouera *)</span>
+   <span class="kw">let</span> x = <span class="dv">10</span> <span class="kw">in</span> <span class="kw">assert</span>(x = <span class="dv">11</span>) <span class="co">(* Ce test échouera *)</span>
 ]
 <span class="co">(* Exécution des tests *)</span>   
 [@@@test_process
    execute_test ()
-]</code></pre>
+]</code></pre></div>
 <p>Au lancement de ce programme, compilé avec <code>-ppx ppx_test.native</code>, la liste tests sera exécutée. Il affiche par défaut, sur la sortie standard, l'identifiant du test en cours d'exécution. Comme les tests enregistrés utilisent <code>assert</code>. Un echec de test interrompra le programme et affichera l'exception sur la sortie standard.</p>
 <blockquote>
 <p>L'exécution des tests est assez anecdotique, typiquement, nous verrons plus loin dans ce document qu'il faut parfois implémenter notre propre routine d'exécution.</p>
@@ -99,16 +99,16 @@
 <p>Il est possible d'utiliser la fonction <code>execute_test</code> de cette manière : <code>execute_test ~verbose:false ()</code> pour ne pas afficher sur la sortie standard le test en cours de vérification.</p>
 <h2 id="mini_unit">Mini_unit</h2>
 <p><code>Mini_unit</code> est une toute petite collection de fonctions pour émettre des assertions. Il n'a aucune vocation particulière au delà de pouvoir tester facilement <code>ppx_test</code>. Ce n'est absolument pas un outil qu'il est conseillé d'utiliser. Sa présence n'a de sens que dans la présentation de <code>ppx_test</code>. Voici sa signature :</p>
-<pre class="sourceCode ocaml"><code class="sourceCode ocaml"><span class="ot">module</span> Assert :
+<div class="sourceCode"><pre class="sourceCode ocaml"><code class="sourceCode ocaml"><span class="ot">module</span> Assert :
   <span class="kw">sig</span>
     <span class="kw">val</span> isTrue : ?verbose:<span class="dt">bool</span> -&gt; <span class="dt">bool</span> -&gt; <span class="dt">unit</span>
     <span class="kw">val</span> isFalse : ?verbose:<span class="dt">bool</span> -&gt; <span class="dt">bool</span> -&gt; <span class="dt">unit</span>
     <span class="kw">val</span> isEquals : ?verbose:<span class="dt">bool</span> -&gt; &#39;a -&gt; &#39;a -&gt; <span class="dt">unit</span>
     <span class="kw">val</span> isNotEquals : ?verbose:<span class="dt">bool</span> -&gt; &#39;a -&gt; &#39;a -&gt; <span class="dt">unit</span>
   <span class="kw">end</span>
-<span class="kw">val</span> report : <span class="dt">unit</span> -&gt; <span class="dt">unit</span></code></pre>
+<span class="kw">val</span> report : <span class="dt">unit</span> -&gt; <span class="dt">unit</span></code></pre></div>
 <p>La fonction <code>report</code> affiche un petit état des lieux des tests exécutés. Voici par exemple un usage du framework (uhu, c'est peut être un peu trop overkill comme nom) testant deux fonctions :</p>
-<pre class="sourceCode ocaml"><code class="sourceCode ocaml">[@@@test_process <span class="ot">open</span> Mini_unit ]
+<div class="sourceCode"><pre class="sourceCode ocaml"><code class="sourceCode ocaml">[@@@test_process <span class="ot">open</span> Mini_unit ]
 
 <span class="kw">let</span> succ x = x + <span class="dv">1</span>
 <span class="kw">let</span> pred x = x - <span class="dv">1</span>
@@ -137,11 +137,11 @@
 <span class="co">(* Lancement des tests *)</span>
 [@@@test_process
   <span class="kw">let</span> _ = execute_tests () <span class="kw">in</span> report ()
-]</code></pre>
+]</code></pre></div>
 <p>Comme l'indique le code, on commence par ouvrir le module <code>Mini_unit</code>. Ensuite on enregistre quelques tests. Et a la fin, on exécute les tests et on affiche le rapport.</p>
 <h2 id="utilisation-avec-ounit">Utilisation avec OUnit</h2>
 <p>La fonction <code>registered_tests ()</code> renvoyant l'intégralité des tests enregistré sous forme de liste de couple <code>(&quot;label&quot;, function)</code>. Il est tout à fait possible (et simple) de lier <code>ppx_test</code> à <code>OUnit</code>. En voici un exemple :</p>
-<pre class="sourceCode ocaml"><code class="sourceCode ocaml">[@@@test_process <span class="ot">open</span> OUnit]
+<div class="sourceCode"><pre class="sourceCode ocaml"><code class="sourceCode ocaml">[@@@test_process <span class="ot">open</span> OUnit]
 
 <span class="co">(* To test *)</span>
 <span class="kw">let</span> succ x = x + <span class="dv">1</span>
@@ -161,7 +161,7 @@
     run_test_tt
      ~verbose:<span class="kw">true</span>
     (<span class="st">&quot;TestSuccAndPred&quot;</span>&gt;:::uTests) 
-]</code></pre>
+]</code></pre></div>
 <p>Le préprocesseur n'implémente pas de création de fonction adapté à OUnit, pour rester agnostique de l'outil de tests, c'est pour ça que je dois me servir d'un <code>List.map</code>.</p>
 <h2 id="conclusion-et-travaux-futurs">Conclusion et travaux futurs</h2>
 <p>Cet extension aura été avant tout une expérience avec les extensions de syntaxes, qui sont très agréables à utiliser (malgré un premier contact difficile :)). Je remercie Gasche, Companion_cube et Whitequark (et Apolly obviouzli) pour leurs conseils et leurs aides.</p>
