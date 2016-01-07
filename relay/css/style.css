@@ -1,0 +1,203 @@
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+body {
+    padding: 0;
+    margin : 0;
+    font-family: 'Lato', sans-serif;
+    font-size: 14pt;
+    color: #12161C;
+}
+
+h1 {
+    font-weight: 900;
+}
+
+#left-pan {
+    position: fixed;
+    top: 0; left: 0; bottom: 0;
+    width: 72px;
+    background-color: #1A2530;
+}
+
+#left-pan ul {
+    margin: 0;
+    margin-top: 20px;
+    padding: 0;
+}
+
+#left-pan li {
+    margin-top: 18px;
+    display: block;
+    text-align: center;
+    font-weight: 100;
+    font-size: 22pt;
+    color: #465B6E;
+    cursor: context-menu;
+    list-style-type: none;
+    transition: all 0.2s ease;
+}
+
+#left-pan li:hover {
+    color: #839AA3;
+    font-size: 24pt;
+}
+
+#left-pan h1 {
+    font-size: 12pt;
+    margin: 0; padding: 2px;
+    text-align: center;
+    background-color: #050B0D;
+    color: #465B6E;
+}
+
+#content {
+    position: absolute;
+    top: 0; left: 72px; right:0; bottom:0;
+}
+
+#block-content {
+    padding: 32px;
+    font-weight: 300;
+}
+
+#top-pan {
+    padding: 22px 32px 4px 32px;
+    text-align: right;
+}
+
+#top-pan > a {
+    background-color: #465B6E;
+    color: #AEBBD1;
+    padding: 6px 32px 6px 32px;
+    text-decoration: none;
+    border-radius: 4px;
+    font-size: 12pt;
+    transition: all 0.2s ease;
+}
+
+#top-pan > a:hover {
+    background-color: #5B81A3;
+    color: #CEDDF7;
+}
+
+
+.topic {
+    padding-left: 24px;
+    margin-bottom: 32px;
+}
+
+.topic  h2 {
+    margin: 0; padding: 0;
+    color: #5B81A3;
+}
+.topic-title {
+    display: flex;
+}
+
+.topic-title > .date {
+    margin-right: 22px;
+    padding: 8px;
+}
+
+.topic-data {
+    display: flex;
+}
+
+.topic > div > div {
+    padding: 12px;
+}
+
+.topic > div > .avatar {
+    text-align: center;
+    width: 160px;
+}
+
+.topic > div > .avatar > img {
+    width: 95px;
+    border-radius: 50%;
+}
+
+.topic > div > .avatar > a {
+    text-decoration: none;
+    font-weight: 900;
+    color: #5B81A3;
+}
+
+.topic p {
+    padding: 0;
+    margin: 0 0 12px 0;
+}
+
+.topic > .data {
+    font-weight: 600;
+}
+
+.topic .description {
+    background-color: #F1F1F1;
+    padding: 12px;
+    border-radius: 12px;
+}
+
+.topic .tags  {
+    padding: 0; margin: 0;
+}
+
+.topic .tags > li {
+    padding: 0; margin: 0;
+    list-style-type: none;
+    display: inline;
+}
+
+.topic .tags > li > a {
+    text-decoration: none;
+    padding: 4px 8px 4px 8px;
+    border-radius: 4px;
+    background-color: #465B6E;
+    color: #AEBBD1;
+    font-size: 10pt;
+    font-weight: 400;
+    transition: all 0.2s ease;
+}
+
+.topic .tags > li > a:hover {
+    background-color: #5B81A3;
+    color: #CEDDF7;
+}
+
+.topic-btn {
+    margin-top: 22px;
+}
+
+.topic-btn > * {
+    margin-right: 12px;
+}
+
+
+.discuss-btn {
+    text-decoration: none;
+    color: #AEBBD1;
+    transition: all 0.2s ease;
+}
+
+.discuss-btn:hover {
+    color: #1AC7F5;
+}
+
+.like-btn {
+    text-decoration: none;
+    color: #FC979A;
+    transition: all 0.2s ease;
+}
+
+.like-btn:hover {
+    color: #FC565B;
+}
+
+.liked-btn,
+.liked-btn:active {
+    color: #FC565B;
+}
