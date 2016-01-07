@@ -1,9 +1,0 @@
-xvw@xvwlabtop:~/Programmation/HTML/relay$ ls
-css
-xvw@xvwlabtop:~/Programmation/HTML/relay$ touch css/style.css
-xvw@xvwlabtop:~/Programmation/HTML/relay$ touch css/style.css
-xvw@xvwlabtop:~/Programmation/HTML/relay$ ls
-css  index.html
-xvw@xvwlabtop:~/Programmation/HTML/relay$ ls css/
-font-awesome.min.css  style.css  style.css~
-xvw@xvwlabtop:~/Programmation/HTML/relay$ 
