@@ -2,7 +2,7 @@
 
 let process ?(f="markdown") ?(t="html") input output =
 	Sys.command
-		("pandoc --latex-engine=xelatex -t "^t^" -f "^f^" -o"^output^" "^input)
+		("pandoc --pdf-engine=xelatex -t "^t^" -f "^f^" -o"^output^" "^input)
 	|> ignore
 
 let markdown_on_the_run str =
@@ -13,4 +13,3 @@ let markdown_on_the_run str =
 	File.remove fileIn;
 	File.remove fileOut;
 	result
-	

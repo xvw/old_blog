@@ -37,33 +37,33 @@
 			</div>
 			<div id="article-content">
 				<blockquote>
-<p>Sur cette page, je référencerai les morceaux de codes que je trouve utiles. Je conçois que pour certaines personnes, beaucoup de ces morceaux ne seront pas d'une grande utilité, mais pour ma part, certains m'ont bien aidés !</p>
+<p>Sur cette page, je référencerai les morceaux de codes que je trouve utiles. Je conçois que pour certaines personnes, beaucoup de ces morceaux ne seront pas d’une grande utilité, mais pour ma part, certains m’ont bien aidés !</p>
 </blockquote>
 <h3 id="sommaire">Sommaire</h3>
 <ul>
-<li><a href="#bash">Snippets Bash</a></li>
-<li><a href="#git">Snippets Git</a></li>
+<li><pre><code>[Snippets Bash](#bash)</code></pre></li>
+<li><pre><code>[Snippets Git](#git)</code></pre></li>
 </ul>
 <h2 id="bash">Bash</h2>
 <h4 id="trouver-et-ordonner-les-plus-grands-répertoiresfichiers-de-mon-disque">Trouver (et ordonner) les plus grands répertoires/fichiers de mon disque</h4>
-<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">su</span>
-<span class="kw">du</span> -hms <span class="ot">$repertoire</span>/* <span class="kw">|</span> <span class="kw">sort</span> -nr <span class="kw">|</span> <span class="kw">head</span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb3-1" data-line-number="1"><span class="fu">su</span></a>
+<a class="sourceLine" id="cb3-2" data-line-number="2"><span class="fu">du</span> -hms <span class="va">$repertoire</span>/* <span class="kw">|</span> <span class="fu">sort</span> -nr <span class="kw">|</span> <span class="fu">head</span></a></code></pre></div>
 <h4 id="afficher-rapidement-son-adresse-ip">Afficher rapidement son adresse IP</h4>
-<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">wget</span> -q -O - ifconfig.co</code></pre></div>
-<h4 id="renvoyer-rapidement-le-status-http-dune-url">Renvoyer rapidement le status HTTP d'une URL</h4>
-<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">curl</span> --write-out <span class="st">&quot;%{http_code}\n&quot;</span> \
---connect-timeout 10 --max-time 20 -s -I \
--L http://www.site.com \
---output /dev/null</code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb4-1" data-line-number="1"><span class="fu">wget</span> -q -O - ifconfig.co</a></code></pre></div>
+<h4 id="renvoyer-rapidement-le-status-http-dune-url">Renvoyer rapidement le status HTTP d’une URL</h4>
+<div class="sourceCode" id="cb5"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb5-1" data-line-number="1"><span class="ex">curl</span> --write-out <span class="st">&quot;%{http_code}\n&quot;</span> \</a>
+<a class="sourceLine" id="cb5-2" data-line-number="2">--connect-timeout 10 --max-time 20 -s -I \</a>
+<a class="sourceLine" id="cb5-3" data-line-number="3">-L http://www.site.com \</a>
+<a class="sourceLine" id="cb5-4" data-line-number="4">--output /dev/null</a></code></pre></div>
 <h4 id="tuer-skype-salement">Tuer skype salement</h4>
-<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">ps</span> -ax <span class="kw">|</span> <span class="kw">egrep</span>  <span class="st">&#39;[0-9] skype$&#39;</span> <span class="kw">|</span> <span class="kw">cut</span> -d <span class="st">&quot; &quot;</span> -f 2 <span class="kw">|</span> <span class="kw">xargs</span> kill -9</code></pre></div>
-<p>La version de Skype de Linux plante souvent (surtout en cas de groupe de conversations actif). Il faut souvent le redemarrer. Cette ligne permet de ne pas devoir identifier &quot;manuellement&quot; son PID.</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb6-1" data-line-number="1"><span class="fu">ps</span> -ax <span class="kw">|</span> <span class="fu">egrep</span>  <span class="st">&#39;[0-9] skype$&#39;</span> <span class="kw">|</span> <span class="fu">cut</span> -d <span class="st">&quot; &quot;</span> -f 2 <span class="kw">|</span> <span class="fu">xargs</span> kill -9</a></code></pre></div>
+<p>La version de Skype de Linux plante souvent (surtout en cas de groupe de conversations actif). Il faut souvent le redemarrer. Cette ligne permet de ne pas devoir identifier “manuellement” son PID.</p>
 <h2 id="git">Git</h2>
 <h4 id="supprimer-les-branches-locales-déjà-fusionnées">Supprimer les branches locales déjà fusionnées</h4>
-<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">git</span> branch --merged <span class="kw">|</span> <span class="kw">grep</span> -v <span class="st">&quot;\*&quot;</span> <span class="kw">|</span> <span class="kw">xargs</span> -n 1 git branch -d</code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb7-1" data-line-number="1"><span class="fu">git</span> branch --merged <span class="kw">|</span> <span class="fu">grep</span> -v <span class="st">&quot;\*&quot;</span> <span class="kw">|</span> <span class="fu">xargs</span> -n 1 git branch -d</a></code></pre></div>
 <h4 id="génère-un-gitignore-utilisant-gitignore.io-pour-un-projet">Génère un gitignore (utilisant gitignore.io) pour un projet</h4>
-<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">curl</span> https://www.gitignore.io/api/emacs,ocaml <span class="kw">&gt;</span> .gitignore</code></pre></div>
-<p>Il suffit de séparer les outils/langages par une virgule après <code>api/</code>. Cette ligne repose entièrement sur l'excellent site <a href="http://gitignore.io">gitignore.io</a>, que je recommande vivement d'utiliser !</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb8-1" data-line-number="1"><span class="ex">curl</span> https://www.gitignore.io/api/emacs,ocaml <span class="op">&gt;</span> .gitignore</a></code></pre></div>
+<p>Il suffit de séparer les outils/langages par une virgule après <code>api/</code>. Cette ligne repose entièrement sur l’excellent site <a href="http://gitignore.io">gitignore.io</a>, que je recommande vivement d’utiliser !</p>
 
 			</div>
 			
